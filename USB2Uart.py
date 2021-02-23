@@ -28,51 +28,79 @@ uartRxHeaderSize = 4
 uartRxCrcSize = 1
 
 
-
 class USBSerialLink:
 
-    def openUSBRfLink(self, serNumber = 1):
+    def __init__(self):
+        self.isOpen = False
+        self.portIsActive = False
+
+    def scanUSBRfLink(self, serNumber = 1):
         comlist = list(list_ports.comports())
-        PossbileComs=[]
+        self.PossbileComs=[]
         count=0
         for element in comlist:
             if 'Silicon Labs' in element.manufacturer:
                 if serNumber == 2:
                     if '0002' in element.serial_number:
                         # save possible ports
-                        PossbileComs.append(element.device)
+                        self.PossbileComs.append(element.device)
                 else:
                     # save possible ports
-                    PossbileComs.append(element.device)
+                    self.PossbileComs.append(element.device)
 
                 count+=1
                
-        if count == 0:
-            print("No Com ports!: " + str(PossbileComs))
-            return "False"
-        else:           
-            self.ser = serial.Serial(PossbileComs[0])
-            try:
-                self.ser
-            except NameError:
-                return "True"
-            else:
-                self.ser.close()  # close serial port    
+    def openPort(self, port):
+        if port == '':
+            self.isOpen = False
+            return False
 
-            self.ser=serial.Serial(PossbileComs[0],57600,timeout=2)
-            print(str(self.ser)+ " is Open")
-            print("USART Baud: " + "57600")
+        self.ser = serial.Serial(str(port))
+        try:
+            self.ser
+        except NameError:
+            #return "True"
+            self.isOpen = False
+            return False
+        else:
+            self.ser.close()  # close serial port    
+            self.isOpen = False
 
-            return "Open"
+        self.ser=serial.Serial(port,57600,timeout=2)
+        print(str(self.ser)+ " is Open")
+        print("USART Baud: " + "57600")
+        self.isOpen = True
+
+        return True
+
+    def getPossibleComs(self):
+        return self.PossbileComs
+
+    def closePort(self):
+        while self.portIsActive == True: 
+            pass
+        
+        self.ser.close()  # close serial port    
+        
+        self.isOpen = False
+
+    def isPortOpen(self):
+        return self.isOpen
 
     def URSBRFLinkFlushBuff(self):
         self.ser.flushInput()
 
     def rxUSBRFLink(self,rxData, timeout): 
+     
+        if self.isOpen != True:
+            return "close",0
+
+        self.portIsActive = True
         
         syncWord = []
         count = 0
-        while True:
+
+        while self.isOpen == True:
             snc = self.ser.read(1)
             if snc:
                 count+=1
@@ -81,6 +109,7 @@ class USBSerialLink:
                     if ord(syncWord[count-uartRxsyncSize]) == 0xaa and ord(syncWord[count-(uartRxsyncSize-1)]) == 0xbb:
                         break  
             else:
+                self.portIsActive = False
                 return "timeout",0                                   
         
         # budeme cist zacatek headru
@@ -91,6 +120,7 @@ class USBSerialLink:
             if tmp:
                 header.append(tmp)
             else:
+                self.portIsActive = False
                 return "timeout",0
             
         #kontrola crc headeru
@@ -98,6 +128,7 @@ class USBSerialLink:
         crc=crc.to_bytes(1,'little')
 
         if crc != header[uartRxHeaderSize-1]:
+            self.portIsActive = False
             return "crcHeaderFail",0
 
         #payload
@@ -107,7 +138,9 @@ class USBSerialLink:
             znak = self.ser.read(1)
             if znak:
                 y_raw.append((znak))
-            else: return "timeout",0
+            else:
+                self.portIsActive = False
+                return "timeout",0
          
         allPacket = bytearray()
         syncWord = syncWord[count-uartRxsyncSize:]
@@ -119,14 +152,12 @@ class USBSerialLink:
         
         if CRC==ord(Rxcrc1):
             command = y_raw[0]
-            if ord(command) > 0 and ord(command) < 180:
-                #rxData = y_raw
-                 return "answerOk",y_raw
+            #if ord(command) > 0 and ord(command) < 180:
+            self.portIsActive = False
+            return "answerOk",y_raw
                         
-            else:
-                return 0,0
         else:
-           
+            self.portIsActive = False
             return "crcFail",0
     
 

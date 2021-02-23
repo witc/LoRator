@@ -21,7 +21,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>110</y>
+      <y>90</y>
       <width>391</width>
       <height>511</height>
      </rect>
@@ -64,7 +64,7 @@
       <rect>
        <x>160</x>
        <y>300</y>
-       <width>81</width>
+       <width>72</width>
        <height>22</height>
       </rect>
      </property>
@@ -84,7 +84,7 @@
       <rect>
        <x>290</x>
        <y>180</y>
-       <width>81</width>
+       <width>72</width>
        <height>22</height>
       </rect>
      </property>
@@ -176,7 +176,7 @@
       <rect>
        <x>290</x>
        <y>60</y>
-       <width>81</width>
+       <width>71</width>
        <height>22</height>
       </rect>
      </property>
@@ -189,7 +189,7 @@
       <rect>
        <x>290</x>
        <y>220</y>
-       <width>81</width>
+       <width>72</width>
        <height>22</height>
       </rect>
      </property>
@@ -219,7 +219,7 @@
       <rect>
        <x>160</x>
        <y>260</y>
-       <width>81</width>
+       <width>72</width>
        <height>22</height>
       </rect>
      </property>
@@ -263,7 +263,7 @@
       <rect>
        <x>290</x>
        <y>300</y>
-       <width>81</width>
+       <width>72</width>
        <height>22</height>
       </rect>
      </property>
@@ -305,8 +305,8 @@
     <widget class="QPushButton" name="buttonWriteRadio">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>390</y>
+       <x>40</x>
+       <y>410</y>
        <width>141</width>
        <height>27</height>
       </rect>
@@ -320,7 +320,7 @@
       <rect>
        <x>290</x>
        <y>100</y>
-       <width>81</width>
+       <width>72</width>
        <height>22</height>
       </rect>
      </property>
@@ -418,7 +418,7 @@
       <rect>
        <x>160</x>
        <y>60</y>
-       <width>81</width>
+       <width>71</width>
        <height>22</height>
       </rect>
      </property>
@@ -431,7 +431,7 @@
       <rect>
        <x>160</x>
        <y>140</y>
-       <width>81</width>
+       <width>72</width>
        <height>22</height>
       </rect>
      </property>
@@ -486,7 +486,7 @@
       <rect>
        <x>160</x>
        <y>180</y>
-       <width>81</width>
+       <width>72</width>
        <height>22</height>
       </rect>
      </property>
@@ -530,7 +530,7 @@
       <rect>
        <x>290</x>
        <y>140</y>
-       <width>81</width>
+       <width>72</width>
        <height>22</height>
       </rect>
      </property>
@@ -584,7 +584,7 @@
      <property name="geometry">
       <rect>
        <x>220</x>
-       <y>390</y>
+       <y>410</y>
        <width>141</width>
        <height>27</height>
       </rect>
@@ -622,7 +622,7 @@
       <rect>
        <x>160</x>
        <y>100</y>
-       <width>81</width>
+       <width>72</width>
        <height>22</height>
       </rect>
      </property>
@@ -672,7 +672,7 @@
       <rect>
        <x>160</x>
        <y>220</y>
-       <width>81</width>
+       <width>72</width>
        <height>22</height>
       </rect>
      </property>
@@ -726,7 +726,7 @@
       <rect>
        <x>290</x>
        <y>260</y>
-       <width>81</width>
+       <width>72</width>
        <height>22</height>
       </rect>
      </property>
@@ -744,8 +744,8 @@
     <widget class="QPushButton" name="btnStandby">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>430</y>
+       <x>40</x>
+       <y>450</y>
        <width>89</width>
        <height>27</height>
       </rect>
@@ -757,8 +757,8 @@
     <widget class="QPushButton" name="btnTXCW">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>430</y>
+       <x>150</x>
+       <y>450</y>
        <width>89</width>
        <height>27</height>
       </rect>
@@ -772,9 +772,9 @@
     <property name="geometry">
      <rect>
       <x>430</x>
-      <y>310</y>
+      <y>90</y>
       <width>671</width>
-      <height>321</height>
+      <height>511</height>
      </rect>
     </property>
     <property name="title">
@@ -783,8 +783,8 @@
     <widget class="QPushButton" name="pushButton_6">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>240</y>
+       <x>10</x>
+       <y>430</y>
        <width>89</width>
        <height>27</height>
       </rect>
@@ -796,8 +796,8 @@
     <widget class="QPushButton" name="pushButton_4">
      <property name="geometry">
       <rect>
-       <x>160</x>
-       <y>250</y>
+       <x>10</x>
+       <y>470</y>
        <width>89</width>
        <height>27</height>
       </rect>
@@ -1082,136 +1082,6 @@ color: white;
       <string/>
      </property>
     </widget>
-   </widget>
-   <widget class="QLabel" name="label_15">
-    <property name="geometry">
-     <rect>
-      <x>460</x>
-      <y>150</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Tx packet:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_17">
-    <property name="geometry">
-     <rect>
-      <x>460</x>
-      <y>200</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Rx packet:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="lblTXPream">
-    <property name="geometry">
-     <rect>
-      <x>550</x>
-      <y>150</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Tx packet:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="lblTXHeader">
-    <property name="geometry">
-     <rect>
-      <x>650</x>
-      <y>150</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Tx packet:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="lblTXPayload">
-    <property name="geometry">
-     <rect>
-      <x>750</x>
-      <y>150</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Tx packet:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="lblTXCRC">
-    <property name="geometry">
-     <rect>
-      <x>850</x>
-      <y>150</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Tx packet:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="lblRXCRC">
-    <property name="geometry">
-     <rect>
-      <x>850</x>
-      <y>200</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Tx packet:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="lblRXPream">
-    <property name="geometry">
-     <rect>
-      <x>550</x>
-      <y>200</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Tx packet:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="lblRXPayload">
-    <property name="geometry">
-     <rect>
-      <x>750</x>
-      <y>200</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Tx packet:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="lblRXHeader">
-    <property name="geometry">
-     <rect>
-      <x>650</x>
-      <y>200</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Tx packet:</string>
-    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

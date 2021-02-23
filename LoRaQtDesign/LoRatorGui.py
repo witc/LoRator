@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Work\LoRaGener\PythonUartTest\LoRaQtDesign\LoRator.ui'
+# Form implementation generated from reading ui file 'LoRator.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.2
 #
@@ -261,7 +261,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "LoRa Transciever"))
         self.groupBox.setToolTip(_translate("MainWindow", "<html><head/><body><pre style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height:130.769%; font-family:\'Courier New\';\"><br/></pre></body></html>"))
         self.groupBox.setTitle(_translate("MainWindow", "Radio Settings"))
         self.lineEdit_3.setText(_translate("MainWindow", "15"))
@@ -338,3 +338,13 @@ class Ui_MainWindow(object):
         self.pushButton_4.setText(_translate("MainWindow", "Start RX"))
         self.pushButton_5.setText(_translate("MainWindow", "TX CW"))
         self.pushButton_6.setText(_translate("MainWindow", "Send Packet"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())

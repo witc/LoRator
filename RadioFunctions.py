@@ -1,6 +1,8 @@
 import numpy as np
 import binascii
 import time 
+import USB2Uart
+
 glEndian='big'
 crc8tab = []
 crc8tab = [
@@ -42,12 +44,16 @@ RadioOpCode = {
     "RxHeaderMode": 13,
     "TxCRC": 14,
     "RxCRC": 15,
-    "Standby": 16,
-    "StartTXCW": 17,
-    "PreparePacket": 18,
+    
+    "PreparePacket": 16,
     "AutoRepeating": 19,
-    "SendPacket": 20,
-    "StartRx": 21,
+    "StartRx": 20,
+    
+    "Standby": 250,
+    "StartTXCW": 251,
+    "SendPacket": 252,
+    "WhatIsYourName": 253,
+    "WhoAreYou": 254,
 }
 
 
@@ -100,11 +106,11 @@ class RadioCmds:
         serialPacket=[RadioOpCode["RxCR"].to_bytes(1,byteorder = glEndian),actionFlag.to_bytes(1,byteorder = glEndian),cr.to_bytes(1,byteorder = glEndian)]
         self.wrapPacket((serialPacket))
 
-    def setHeaderModeTx(self,actionFlag, mode):
+    def setTXHeaderMode(self,actionFlag, mode):
         serialPacket=[RadioOpCode["TxHeaderMode"].to_bytes(1,byteorder = glEndian),actionFlag.to_bytes(1,byteorder = glEndian),mode.to_bytes(1,byteorder = glEndian)]
         self.wrapPacket((serialPacket))
 
-    def setHeaderModeRx(self,actionFlag, mode):
+    def setRXHeaderMode(self,actionFlag, mode):
         serialPacket=[RadioOpCode["RxHeaderMode"].to_bytes(1,byteorder = glEndian),actionFlag.to_bytes(1,byteorder = glEndian),mode.to_bytes(1,byteorder = glEndian)]
         self.wrapPacket((serialPacket))
 
@@ -116,14 +122,6 @@ class RadioCmds:
         serialPacket=[RadioOpCode["TxCRC"].to_bytes(1,byteorder = glEndian),actionFlag.to_bytes(1,byteorder = glEndian),crc.to_bytes(1,byteorder = glEndian)]
         self.wrapPacket((serialPacket))
 
-    def setStandby(self):
-        serialPacket=[RadioOpCode["Standby"].to_bytes(1,byteorder = glEndian)]
-        self.wrapPacket((serialPacket))
-
-    def startTXCW(self):
-        serialPacket=[RadioOpCode["StartTXCW"].to_bytes(1,byteorder = glEndian)]
-        self.wrapPacket((serialPacket))
-   
     def preparePacket(self,actionFlag,packet):
         array = []
         for i in packet:
@@ -136,106 +134,237 @@ class RadioCmds:
         serialPacket=[RadioOpCode["AutoRepeating"].to_bytes(1,byteorder = glEndian),actionFlag.to_bytes(1,byteorder = glEndian),repeatPeriod.to_bytes(4,byteorder = glEndian)]
         self.wrapPacket((serialPacket))
 
-    def sendPacket(self):
-        cmdSendPacket = 19
-        serialPacket=[cmdSendPacket.to_bytes(1,byteorder = glEndian)]
-        self.wrapPacket((serialPacket))
-
     def startRx(self,timeout):
         cmdStartRx = 21
         serialPacket=[cmdStartRx.to_bytes(1,byteorder = glEndian),timeout.to_bytes(4,byteorder = glEndian)]
         self.wrapPacket((serialPacket))
 
+##################################################################################################
+
+    def WhatIsYourName(self):
+        serialPacket=[RadioOpCode["WhatIsYourName"].to_bytes(1,byteorder = glEndian)]
+        self.wrapPacket((serialPacket))  
+
+    def whoAreYou(self):
+        serialPacket=[RadioOpCode["WhoAreYou"].to_bytes(1,byteorder = glEndian)]
+        self.wrapPacket((serialPacket))  
+
+    def sendPacket(self):
+        serialPacket=[RadioOpCode["SendPacket"].to_bytes(1,byteorder = glEndian)]
+        self.wrapPacket((serialPacket))
+
+    def startTXCW(self):
+        serialPacket=[RadioOpCode["StartTXCW"].to_bytes(1,byteorder = glEndian)]
+        self.wrapPacket((serialPacket))
+   
+    def setStandby(self):
+        serialPacket=[RadioOpCode["Standby"].to_bytes(1,byteorder = glEndian)]
+        self.wrapPacket((serialPacket))
+
     ###################################################################################################
     #               D E C O D I N G
     ###################################################################################################
-    def saveTxFreq(self,rxData, generator,lorator):       
+    def saveTxFreq(self,rxData, generator,mainWin):       
         frekvence= self.bytesToOrd(rxData[1:],4)
         generator.TXFreq = int.from_bytes(frekvence[0:4],byteorder='little')
-        lorator.fillTxFreq(str(generator.TXFreq))
+        mainWin.leTXFreq.setText(str(generator.TXFreq))
         print("Frekvence TX: {}".format(generator.TXFreq))
 
-    def saveRxFreq(self,rxData, generator, lorator):
+    def saveRxFreq(self,rxData, generator,mainWin):
         frekvence= self.bytesToOrd(rxData[1:],4)
         generator.RXFreq = int.from_bytes(frekvence[0:4],byteorder='little')
-        lorator.setRxFreq(generator.RXFreq)
+        mainWin.leRXFreq.setText(str(generator.RXFreq))
         print("Frekvence RX: {}".format(generator.RXFreq))
 
-    # def saveTxPower(self,rxData, generator):
-    #     power = self.bytesToOrd(rxData[1:],1)
-    #     generator.TXPower = int.from_bytes(power,byteorder='little')
-    #     print("Tx Power: {}".format(generator.TXPower))
+    def saveTxPower(self,rxData, generator,mainWin):
+        power = self.bytesToOrd(rxData[1:],1)
+        generator.TXPower = int.from_bytes(power,byteorder='little', signed = True)
+        mainWin.leTXPower.setText(str(generator.TXPower))
+        print("Tx Power: {}".format(generator.TXPower))
 
-    # def saveTxSf(self,rxData, generator):
-    #     sf = self.bytesToOrd(rxData[1:],1)
-    #     generator.TXSF = int.from_bytes(sf,byteorder='little')
-    #     print("TX SF: {}".format(generator.TXSF))
+    def saveTxSf(self,rxData, generator,mainWin):
+        sf = self.bytesToOrd(rxData[1:],1)
+        generator.TXSF = int.from_bytes(sf,byteorder='little')
+        tmpText = "SF"+str(generator.TXSF)
+        index = mainWin.cbTXSF.findText(tmpText)
+        if index >= 0:
+            mainWin.cbTXSF.setCurrentIndex(index)
 
-    # def saveRxSf(self,rxData, generator):
-    #     sf = self.bytesToOrd(rxData[1:],1)
-    #     generator.RXSF = int.from_bytes(sf,byteorder='little')
-    #     print("RX SF: {}".format(generator.RXSF))
+        print("TX SF: {}".format(generator.TXSF))
+
+    def saveRxSf(self,rxData, generator,mainWin):
+        sf = self.bytesToOrd(rxData[1:],1)
+        generator.RXSF = int.from_bytes(sf,byteorder='little')
+        tmpText = "SF"+str(generator.TXSF)
+        index = mainWin.cbRXSF.findText(tmpText)
+        if index >= 0:
+            mainWin.cbRXSF.setCurrentIndex(index)
+
+        print("RX SF: {}".format(generator.RXSF))
     
-    # def saveTxBW(self,rxData, generator):
-    #     sf = self.bytesToOrd(rxData[1:],1)
-    #     generator.TXBW = int.from_bytes(sf,byteorder='little')
-    #     print("RX SF: {}".format(generator.TXBW))
+    def saveTxBW(self,rxData, generator,mainWin):
+        bw = self.bytesToOrd(rxData[1:],4)
+        generator.TXBW = int.from_bytes(bw,byteorder='little')
+        if generator.TXBW == 500000:
+            tmpText = "500"
+        elif generator.TXBW == 250000:
+            tmpText = "250"
+        elif generator.TXBW == 125000:
+            tmpText = "125"
+        elif generator.TXBW == 62500:
+            tmpText = "62.5"   
+        elif generator.TXBW == 31250:
+            tmpText = "31.25" 
+        elif generator.TXBW == 20830:
+            tmpText = "20.83"     
+        elif generator.TXBW == 15630:
+            tmpText = "15.63" 
+        elif generator.TXBW == 10420:
+            tmpText = "10.42"    
+        elif generator.TXBW == 7810:
+            tmpText = "7.81"       
+        else:
+            tmpText = "125"  
+        index = mainWin.cbTXBW.findText(tmpText)
+        if index >= 0:
+            mainWin.cbTXBW.setCurrentIndex(index)
+        print("TX BW: {}".format(generator.TXBW))
 
-    # def saveRxBW(self,rxData, generator):
-    #     sf = self.bytesToOrd(rxData[1:],1)
-    #     generator.RXBW = int.from_bytes(sf,byteorder='little')
-    #     print("RX SF: {}".format(generator.RXBW))
+    def saveRxBW(self,rxData, generator,mainWin):
+        bw = self.bytesToOrd(rxData[1:],4)
+        generator.RXBW = int.from_bytes(bw,byteorder='little')
+        if generator.RXBW == 500000:
+            tmpText = "500"
+        elif generator.RXBW == 250000:
+            tmpText = "250"
+        elif generator.RXBW == 125000:
+            tmpText = "125"
+        elif generator.RXBW == 62500:
+            tmpText = "62.5"   
+        elif generator.RXBW == 31250:
+            tmpText = "31.25" 
+        elif generator.RXBW == 20830:
+            tmpText = "20.83"     
+        elif generator.RXBW == 15630:
+            tmpText = "15.63" 
+        elif generator.RXBW == 1042:
+            tmpText = "10.42"    
+        elif generator.RXBW == 7810:
+            tmpText = "7.81"       
+        else:
+            tmpText = "125"  
+        index = mainWin.cbRXBW.findText(tmpText)
+        if index >= 0:
+            mainWin.cbRXBW.setCurrentIndex(index)
+        print("RX BW: {}".format(generator.RXBW))
 
-    # def saveTxIq(self,rxData, generator):
-    #     sf = self.bytesToOrd(rxData[1:],1)
-    #     generator.TXIQ = int.from_bytes(sf,byteorder='little')
-    #     print("RX SF: {}".format(generator.TXIQ))
+    def saveTxIq(self,rxData, generator,mainWin):
+        sf = self.bytesToOrd(rxData[1:],1)
+        generator.TXIQ = int.from_bytes(sf,byteorder='little')
+        if generator.TXIQ == 1:
+            tmpText = "true"
+        else:
+            tmpText = "false"
+        index = mainWin.cbTXIQ.findText(tmpText)
+        if index >= 0:
+            mainWin.cbTXIQ.setCurrentIndex(index)
+        print("TX IQ: {}".format(generator.TXIQ))
 
-    # def saveRxIq(self,rxData, generator):
-    #     sf = self.bytesToOrd(rxData[1:],1)
-    #     generator.RXIQ = int.from_bytes(sf,byteorder='little')
-    #     print("RX SF: {}".format(generator.RXIQ))
+    def saveRxIq(self,rxData, generator,mainWin):
+        sf = self.bytesToOrd(rxData[1:],1)
+        generator.RXIQ = int.from_bytes(sf,byteorder='little')
+        if generator.RXIQ == 1:
+            tmpText = "true"
+        else:
+            tmpText = "false"
+        index = mainWin.cbRXIQ.findText(tmpText)
+        if index >= 0:
+            mainWin.cbRXIQ.setCurrentIndex(index)
+        print("RX IQ: {}".format(generator.RXIQ))
  
-    # def saveTxCR(self,rxData, generator):
-    #     sf = self.bytesToOrd(rxData[1:],1)
-    #     generator.TXCR = int.from_bytes(sf,byteorder='little')
-    #     print("RX SF: {}".format(generator.TXCR))
+    def saveTxCR(self,rxData, generator,mainWin):
+        sf = self.bytesToOrd(rxData[1:],1)
+        generator.TXCR = int.from_bytes(sf,byteorder='little')
+        if generator.TXCR == 45:
+            tmpText = "4/5"
+        elif generator.TXCR == 46:
+            tmpText = "4/6"
+        elif generator.TXCR == 47:
+            tmpText = "4/7"
+        elif generator.TXCR == 48:
+            tmpText = "4/8"   
+        else:
+            tmpText = "4/5"  
+        index = mainWin.cbTXCR.findText(tmpText)
+        if index >= 0:
+            mainWin.cbTXCR.setCurrentIndex(index)
 
-    # def saveRxCR(self,rxData, generator):
-    #     sf = self.bytesToOrd(rxData[1:],1)
-    #     generator.RXCR = int.from_bytes(sf,byteorder='little')
-    #     print("RX SF: {}".format(generator.RXCR))
+        print("TX CR: {}".format(generator.TXCR))
+
+    def saveRxCR(self,rxData, generator,mainWin):
+        sf = self.bytesToOrd(rxData[1:],1)
+        generator.RXCR = int.from_bytes(sf,byteorder='little')
+        if generator.RXCR == 45:
+            tmpText = "4/5"
+        elif generator.RXCR == 46:
+            tmpText = "4/6"
+        elif generator.RXCR == 47:
+            tmpText = "4/7"
+        elif generator.RXCR == 48:
+            tmpText = "4/8"   
+        else:
+            tmpText = "4/5"    
+
+        index = mainWin.cbRXCR.findText(tmpText)
+        if index >= 0:
+            mainWin.cbRXCR.setCurrentIndex(index)
+        print("RX CR: {}".format(generator.RXCR))
+
+    def saveHeaderMTx(self,rxData, generator,mainWin):
+        sf = self.bytesToOrd(rxData[1:],1)
+        generator.TXHeaderMode = int.from_bytes(sf,byteorder='little')
+        print("TX Header: {}".format(generator.TXHeaderMode))
+
+    def saveHeaderMRx(self,rxData, generator,mainWin):
+        sf = self.bytesToOrd(rxData[1:],1)
+        generator.RXHeaderMode = int.from_bytes(sf,byteorder='little')
+        print("RX Header: {}".format(generator.RXHeaderMode))
+
+    def saveRxCRC(self,rxData, generator,mainWin):
+        sf = self.bytesToOrd(rxData[1:],1)
+        generator.RXCRC = int.from_bytes(sf,byteorder='little')
+        print("RX CRC: {}".format(generator.RXCRC))    
+
+    def saveTxCRC(self,rxData, generator,mainWin):
+        sf = self.bytesToOrd(rxData[1:],1)
+        generator.TXCRC = int.from_bytes(sf,byteorder='little')
+        print("TX CRC: {}".format(generator.TXCRC))    
+
+    def saveRadioStatus(self,rxData, generator,mainWin):
+        sf = self.bytesToOrd(rxData[1:],1)
+        generator.RXCRC = int.from_bytes(sf,byteorder='little')
+        print("RX SF: {}".format(generator.RXCRC))                       
+
+    def saveAutoRepeating(self,rxData, generator,mainWin):
+        sf = self.bytesToOrd(rxData[1:],4)
+        generator.AutoRepeating = int.from_bytes(sf,byteorder='little')
+        print("RX SF: {}".format(generator.AutoRepeating))        
+   
+    def saveSystemType(self,rxData, generator,mainWin):
+        sf = self.bytesToOrd(rxData[1:],2)
+        generator.SystemType = int.from_bytes(sf,byteorder='little')
+        print("System type: {}".format(generator.systemType))        
+    
+    def saveTargetName(self,rxData, generator,mainWin):
+        lenPayload = len(rxData) - USB2Uart.uartRxCrcSize -1 #-1 = command
+        name = self.bytesToOrd(rxData[1:],lenPayload)
+        str = ''
+        for ele in name:
+            str+= chr(ele)
+        generator.TargetName = str
+        print("System type: {}".format(generator.TargetName))   
 
 
-    # def saveHeaderMTx(self,rxData, generator):
-    #     sf = self.bytesToOrd(rxData[1:],1)
-    #     generator.TXHeaderMode = int.from_bytes(sf,byteorder='little')
-    #     print("RX SF: {}".format(generator.TXHeaderMode))
-
-    # def saveHeaderMRx(self,rxData, generator):
-    #     sf = self.bytesToOrd(rxData[1:],1)
-    #     generator.RXHeaderMode = int.from_bytes(sf,byteorder='little')
-    #     print("RX SF: {}".format(generator.RXHeaderMode))
-
-    # def saveRxCRC(self,rxData, generator):
-    #     sf = self.bytesToOrd(rxData[1:],1)
-    #     generator.RXCRC = int.from_bytes(sf,byteorder='little')
-    #     print("RX SF: {}".format(generator.RXCRC))    
-
-    # def saveTxCRC(self,rxData, generator):
-    #     sf = self.bytesToOrd(rxData[1:],1)
-    #     generator.TXCRC = int.from_bytes(sf,byteorder='little')
-    #     print("RX SF: {}".format(generator.TXCRC))    
-
-    # def saveRadioStatus(self,rxData, generator):
-    #     sf = self.bytesToOrd(rxData[1:],1)
-    #     generator.RXCRC = int.from_bytes(sf,byteorder='little')
-    #     print("RX SF: {}".format(generator.RXCRC))                       
-
-    # def saveAutoRepeating(self,rxData, generator):
-    #     sf = self.bytesToOrd(rxData[1:],4)
-    #     generator.AutoRepeating = int.from_bytes(sf,byteorder='little')
-    #     print("RX SF: {}".format(generator.AutoRepeating))        
 ###################################################################################################
     def wrapPacket(self,payload):
         finalPacket = bytearray()
@@ -269,7 +398,7 @@ class RadioCmds:
 
         # odeslu balik na uart
         self.port.ser.write(finalPacket)#bytePacket
-        #time.sleep(0.01)
+        #time.sleep(0.02)
 
     def crc8(self,data : bytearray, size):
         crc = 0
