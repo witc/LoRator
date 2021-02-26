@@ -2,77 +2,205 @@
 from PyQt5 import QtGui, QtCore
 
 packetDrawX = 530
-packetDrawY = 138
+packetTXDrawY = 118
+packetRXDrawY = 216
 packetDrawWidth = 100
 
-def comboToInt(str,start):
-    str = str[start:]
-    #[int(str) for str in str.split() if str.isdigit()][0]
-    return int(str)
+class  GuiManager():
 
-def comboBoolToInt(str):
-    if str == 'true':
-        return 1
-    else:
-        return 0
+    def __init__(self, mainwindow, parent = None):
+        #super(ThreadClass,self).__init__(parent)
+        self.mainWin = mainwindow
 
-def comNoSlash(str):
-    nstr = (str.translate({ord('/'): None}))
-    return comboToInt(nstr,0)
 
-def khzTohz(str):
-    nstr = float(str)
-    nstr *=1000
-    return int(nstr)
+    def getTXFreq(self):
+        return int(self.mainWin.leTXFreq.text())
 
-def comboBoxDisable(cb):
-    cb.setEnabled(False)
+    def getRXFreq(self):
+        return int(self.mainWin.leRXFreq.text())
 
-def comboBoxEnable(cb):
-    cb.setEnabled(True)
+    def getTXSF(self):
+        return self.comboToInt(self.mainWin.cbTXSF.currentText(),2)
 
-def editTextDisable(le):
-    le.setEnabled(False)
+    def getRXSF(self):
+        return self.comboToInt(self.mainWin.cbTXSF.currentText(),2)
 
-def editTextEnable(le):  
-    le.setEnabled(True)
+    def getTXBW(self):
+        return self.khzTohz(self.mainWin.cbTXBW.currentText())
 
-def btnDisable(btn):
-    btn.setEnabled(False)
+    def getRXBW(self):
+        return self.khzTohz(self.mainWin.cbTXBW.currentText())
 
-def btnEnable(btn):
-    btn.setEnabled(True)
+    def getTXIQ(self):
+        return self.comboBoolToInt(self.mainWin.cbTXIQ.currentText())
 
-def groupboxDisable(gb):
-    gb.setEnabled(False)
+    def getRXIQ(self):
+        return self.comboBoolToInt(self.mainWin.cbRXIQ.currentText())
 
-def groupboxEnable(gb):
-    gb.setEnabled(True)    
+    def getTXCR(self):
+        return self.comNoSlash(self.mainWin.cbTXCR.currentText())
 
-def drawLines(self, qp):
-      
-    pen = QtGui.QPen(QtCore.Qt.black, 2, QtCore.Qt.SolidLine)
+    def getRXCR(self):
+        return self.comNoSlash(self.mainWin.cbTXCR.currentText())
 
-    qp.setPen(pen)
-    qp.drawLine(20, 40, 250, 40)
+    def getTXHead(self):
+        return self.comboBoolToInt(self.mainWin.cbTXHeader.currentText())
 
-    pen.setStyle(QtCore.Qt.DashLine)
-    qp.setPen(pen)
-    qp.drawLine(20, 80, 250, 80)
+    def getRXHead(self):
+        return self.comboBoolToInt(self.mainWin.cbRXHeader.currentText())
 
-    pen.setStyle(QtCore.Qt.DashDotLine)
-    qp.setPen(pen)
-    qp.drawLine(20, 120, 250, 120)
+    def getTXCrc(self):
+        return self.comboBoolToInt(self.mainWin.cbTXCrc.currentText())
 
-    pen.setStyle(QtCore.Qt.DotLine)
-    qp.setPen(pen)
-    qp.drawLine(20, 160, 250, 160)
+    def getRXCrc(self):
+        return self.comboBoolToInt(self.mainWin.cbRXCrc.currentText())
 
-    pen.setStyle(QtCore.Qt.DashDotDotLine)
-    qp.setPen(pen)
-    qp.drawLine(20, 200, 250, 200)
+    def getTXPower(self):
+        return int(self.mainWin.leTXPower.text())
 
-    pen.setStyle(QtCore.Qt.CustomDashLine)
-    pen.setDashPattern([1, 4, 5, 4])
-    qp.setPen(pen)
-    qp.drawLine(20, 240, 250, 240)
+
+    def updatePacketDrawing(self,e):
+        painter = QtGui.QPainter(self)
+        painter.setPen(QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine))
+        painter.eraseRect(60, 650, 500,40)
+        painter.setBrush(QtGui.QBrush(QtCore.Qt.darkGreen, QtCore.Qt.Dense4Pattern ))
+
+        next = packetDrawX
+        nextRX = packetDrawX
+        
+        #Preamble
+        painter.drawRect(next, packetTXDrawY, packetDrawWidth,40)
+        painter.drawRect(next, packetRXDrawY, packetDrawWidth,40)
+        self.lblTXPream.setText("Preamble")
+        self.lblRXPream.setText("Preamble")
+        next+=packetDrawWidth
+        nextRX+=packetDrawWidth
+        #TX Header
+        if self.cbTXHeader.currentText() == "Enabled":
+            painter.setBrush(QtGui.QBrush(QtCore.Qt.green, QtCore.Qt.Dense4Pattern))
+            painter.drawRect(next, packetTXDrawY, packetDrawWidth,40)
+            self.lblTXHeader.setText("Header")
+            next+=packetDrawWidth
+            self.lblTXPayload.setGeometry(packetDrawWidth+self.lblTXHeader.x(), self.lblTXHeader.y(), self.lblTXHeader.width(), self.lblTXHeader.height()) 
+            self.lblTXCRC.setGeometry(packetDrawWidth+self.lblTXPayload.x(), self.lblTXPayload.y(), self.lblTXPayload.width(), self.lblTXPayload.height()) 
+        else:
+            self.lblTXHeader.setText("")
+            self.lblTXPayload.setGeometry(self.lblTXHeader.x(), self.lblTXHeader.y(), self.lblTXHeader.width(), self.lblTXHeader.height()) 
+            self.lblTXCRC.setGeometry(packetDrawWidth+self.lblTXPayload.x(), self.lblTXPayload.y(), self.lblTXPayload.width(), self.lblTXPayload.height()) 
+
+        #RX Header
+        if self.cbRXHeader.currentText() == "Enabled":
+            painter.setBrush(QtGui.QBrush(QtCore.Qt.green, QtCore.Qt.Dense4Pattern))
+            painter.drawRect(nextRX, packetRXDrawY, packetDrawWidth,40)
+            self.lblRXHeader.setText("Header")
+            nextRX+=packetDrawWidth
+            self.lblRXPayload.setGeometry(packetDrawWidth+self.lblRXHeader.x(), self.lblRXHeader.y(), self.lblRXHeader.width(), self.lblRXHeader.height()) 
+            self.lblRXCRC.setGeometry(packetDrawWidth+self.lblRXPayload.x(), self.lblRXPayload.y(), self.lblRXPayload.width(), self.lblRXPayload.height()) 
+        else:
+            self.lblRXHeader.setText("")
+            self.lblRXPayload.setGeometry(self.lblRXHeader.x(), self.lblRXHeader.y(), self.lblRXHeader.width(), self.lblRXHeader.height()) 
+            self.lblRXCRC.setGeometry(packetDrawWidth+self.lblRXPayload.x(), self.lblRXPayload.y(), self.lblRXPayload.width(), self.lblRXPayload.height()) 
+
+
+        #TX Payload
+        painter.setBrush(QtGui.QBrush(QtCore.Qt.cyan, QtCore.Qt.Dense4Pattern))
+        painter.drawRect(next, packetTXDrawY, packetDrawWidth,40)
+        self.lblTXPayload.setText("Payload")
+        next+=packetDrawWidth
+
+        #RX Payload
+        painter.setBrush(QtGui.QBrush(QtCore.Qt.cyan, QtCore.Qt.Dense4Pattern))
+        painter.drawRect(nextRX, GuiManager.packetRXDrawY, GuiManager.packetDrawWidth,40)
+        self.lblRXPayload.setText("Payload")
+        nextRX+=GuiManager.packetDrawWidth
+        
+        
+
+    def comboToInt(self,str,start):
+        str = str[start:]
+        #[int(str) for str in str.split() if str.isdigit()][0]
+        return int(str)
+
+    def comboBoolToInt(self,str):
+        if str == 'true':
+            return 1
+        else:
+            return 0
+
+    def comNoSlash(self, str):
+        nstr = (str.translate({ord('/'): None}))
+        return self.comboToInt(nstr,0)
+
+    def khzTohz(self,str):
+        nstr = float(str)
+        nstr *=1000
+        return int(nstr)
+
+    def comboBoxDisable(self,cb):
+        cb.setEnabled(False)
+
+    def comboBoxEnable(self,cb):
+        cb.setEnabled(True)
+
+    def editTextDisable(self,le):
+        le.setEnabled(False)
+
+    def editTextEnable(self,le):  
+        le.setEnabled(True)
+
+    def btnDisable(self,btn):
+        btn.setEnabled(False)
+
+    def btnEnable(self,btn):
+        btn.setEnabled(True)
+
+    def groupboxDisable(self,gb):
+        gb.setEnabled(False)
+
+    def groupboxEnable(self,gb):
+        gb.setEnabled(True)    
+
+    def dissableAppWidgets(self):
+        self.groupboxDisable(self.mainWin.groupBox)
+        # GuiManager.editTextDisable(self.leTXFreq)
+        # GuiManager.editTextDisable(self.leRXFreq)
+        # GuiManager.comboBoxDisable(self.cbTXSF)
+        # GuiManager.comboBoxDisable(self.cbRXSF)
+        # GuiManager.comboBoxDisable(self.cbTXBW)
+        # GuiManager.comboBoxDisable(self.cbRXBW)
+        # GuiManager.comboBoxDisable(self.cbTXIQ)
+        # GuiManager.comboBoxDisable(self.cbRXIQ)
+        # GuiManager.comboBoxDisable(self.cbTXCR)
+        # GuiManager.comboBoxDisable(self.cbRXCR)
+        # GuiManager.comboBoxDisable(self.cbTXHeader)
+        # GuiManager.comboBoxDisable(self.cbRXHeader)
+        # GuiManager.comboBoxDisable(self.cbTXCrc)
+        # GuiManager.comboBoxDisable(self.cbRXCrc)
+        # GuiManager.editTextDisable(self.leTXPower)
+        # GuiManager.btnDisable(self.buttonWriteRadio)
+        # GuiManager.btnDisable(self.buttonReadRadio)
+        # GuiManager.btnDisable(self.btnStandby)
+        # GuiManager.btnDisable(self.btnTXCW)
+
+    def enableAppWidgets(self):
+        self.groupboxEnable(self.mainWin.groupBox)
+        # GuiManager.editTextEnable(self.leTXFreq)
+        # GuiManager.editTextEnable(self.leRXFreq)
+        # GuiManager.comboBoxEnable(self.cbTXSF)
+        # GuiManager.comboBoxEnable(self.cbRXSF)
+        # GuiManager.comboBoxEnable(self.cbTXBW)
+        # GuiManager.comboBoxEnable(self.cbRXBW)
+        # GuiManager.comboBoxEnable(self.cbTXIQ)
+        # GuiManager.comboBoxEnable(self.cbRXIQ)
+        # GuiManager.comboBoxEnable(self.cbTXCR)
+        # GuiManager.comboBoxEnable(self.cbRXCR)
+        # GuiManager.comboBoxEnable(self.cbTXHeader)
+        # GuiManager.comboBoxEnable(self.cbRXHeader)
+        # GuiManager.comboBoxEnable(self.cbTXCrc)
+        # GuiManager.comboBoxEnable(self.cbRXCrc)
+        # GuiManager.editTextEnable(self.leTXPower)
+        # GuiManager.btnEnable(self.buttonWriteRadio)
+        # GuiManager.btnEnable(self.buttonReadRadio)
+        # GuiManager.btnEnable(self.btnStandby)
+        # GuiManager.btnEnable(self.btnTXCW)
+        

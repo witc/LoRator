@@ -126,7 +126,7 @@ class RadioCmds:
         array = []
         for i in packet:
             array.append(bytes(i, 'utf-8'))
-        serialPacket=[RadioOpCode["PreparePacket"].to_bytes(1,byteorder = glEndian),actionFlag.to_bytes(1,byteorder = glEndian),len(packet).to_bytes(1,glEndian)]
+        serialPacket=[RadioOpCode["PreparePacket"].to_bytes(1,byteorder = glEndian),actionFlag.to_bytes(1,byteorder = glEndian),int(0.5*len(packet)).to_bytes(1,glEndian)]
         serialPacket+=array
         self.wrapPacket((serialPacket))
 
@@ -350,10 +350,26 @@ class RadioCmds:
         generator.AutoRepeating = int.from_bytes(sf,byteorder='little')
         print("RX SF: {}".format(generator.AutoRepeating))        
    
-    def saveSystemType(self,rxData, generator,mainWin):
-        sf = self.bytesToOrd(rxData[1:],2)
-        generator.SystemType = int.from_bytes(sf,byteorder='little')
-        print("System type: {}".format(generator.systemType))        
+    def saveWhoAreYou(self,rxData,  generator,mainWin):
+        lenPayload = len(rxData) - USB2Uart.uartRxCrcSize -1 #-1 = command
+        sysInfo = self.bytesToOrd(rxData[1:],lenPayload)
+        str = ''
+        for ele in sysInfo:
+            str+= chr(ele)
+        listInfo = str.split()
+
+        generator.TargetMCU = listInfo[0]
+        generator.TargetRadio = listInfo[1]
+        generator.TargetMinPower = listInfo[2]
+        generator.TargetMaxPower = listInfo[3]
+        generator.SystemID = (listInfo[4])
+
+        mainWin.lblDevName.setText(generator.TargetMCU)
+        mainWin.lblDevName_2.setText(generator.SystemID)
+        mainWin.lblMinPowerV.setText(generator.TargetMinPower)
+        mainWin.lblMaxPowerV.setText(generator.TargetMaxPower)
+        #mainWin.lblMaxPowerV.setText(generator.TargetMaxPower)
+   
     
     def saveTargetName(self,rxData, generator,mainWin):
         lenPayload = len(rxData) - USB2Uart.uartRxCrcSize -1 #-1 = command
@@ -362,8 +378,9 @@ class RadioCmds:
         for ele in name:
             str+= chr(ele)
         generator.TargetName = str
-        print("System type: {}".format(generator.TargetName))   
-
+        print("System type: {}".format(generator.TargetName))  
+        mainWin.lblDevName.setText(generator.TargetName) 
+        
 
 ###################################################################################################
     def wrapPacket(self,payload):

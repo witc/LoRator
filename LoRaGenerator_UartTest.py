@@ -45,7 +45,7 @@ RadioOpCodeSwitcher = {
         20: Radio.saveRadioStatus,
         21: Radio.saveRadioStatus,
         253: Radio.saveTargetName,
-        254:Radio.saveSystemType,
+        254:Radio.saveWhoAreYou,
     }
 
 class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -57,7 +57,8 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
         self.USBLink = usblink
         self.Generator = generator
         self.addedChar = False
-        
+        self.guiManager = GuiManager.GuiManager(self)
+        print(self.guiManager.getTXSF())
         # scan Serial ports
         self.comboBox.clear() 
         self.USBLink.scanUSBRfLink()
@@ -71,9 +72,20 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
         self.leHexInput.textChanged.connect(self.CallbackHexInChanged)
         self.leStringInput.textChanged.connect(self.CallbackStringInpu)
         self.cbTXHeader.currentTextChanged.connect(self.CallbackRadioParChange)
-        self.cbTXCrc.currentTextChanged.connect(self.CallbackRadioParChange)
+        self.cbTXSF.currentTextChanged.connect(self.CallbackRadioParChange)
+        self.cbTXBW.currentTextChanged.connect(self.CallbackRadioParChange)
+        self.cbTXIQ.currentTextChanged.connect(self.CallbackRadioParChange)
+        self.cbTXCR.currentTextChanged.connect(self.CallbackRadioParChange)
         
-        self.dissableAppWidgets()
+        self.cbRXHeader.currentTextChanged.connect(self.CallbackRadioParChange)
+        self.cbRXSF.currentTextChanged.connect(self.CallbackRadioParChange)
+        self.cbRXBW.currentTextChanged.connect(self.CallbackRadioParChange)
+        self.cbRXIQ.currentTextChanged.connect(self.CallbackRadioParChange)
+        self.cbRXCR.currentTextChanged.connect(self.CallbackRadioParChange)
+        self.cbRXCrc.currentTextChanged.connect(self.CallbackRadioParChange)
+        
+
+        self.guiManager.dissableAppWidgets()
         self.buttonWriteRadio.clicked.connect(self.CallbackWriteRadio)
         self.buttonReadRadio.clicked.connect(self.CallbackReadRadio)
         self.btnStandby.clicked.connect(self.CallbackSetStandby)
@@ -81,21 +93,27 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButton_6.clicked.connect(self.CallbackSendPacket)       
 
     def paintEvent(self,e):
+        #self.guiManager.updatePacketDrawing(e)
         painter = QtGui.QPainter(self)
         painter.setPen(QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine))
-        painter.eraseRect(60, 650, 500,40)
-        painter.setBrush(QtGui.QBrush(QtCore.Qt.darkGreen, QtCore.Qt.DiagCrossPattern ))
+        #painter.eraseRect(GuiManager.packetDrawX, GuiManager.packetTXDrawY-20, 5000,400)
+        #painter.eraseRect(GuiManager.packetDrawX, GuiManager.packetRXDrawY-20, 5000,400)
+        painter.setBrush(QtGui.QBrush(QtCore.Qt.darkGreen, QtCore.Qt.Dense4Pattern ))
 
         next = GuiManager.packetDrawX
-        #Preamble
-        painter.drawRect(next, GuiManager.packetDrawY, GuiManager.packetDrawWidth,40)
-        self.lblTXPream.setText("Preamble")
-        next+=GuiManager.packetDrawWidth
+        nextRX = GuiManager.packetDrawX
         
-        #Header
+        #Preamble
+        painter.drawRect(next, GuiManager.packetTXDrawY, GuiManager.packetDrawWidth,40)
+        painter.drawRect(next, GuiManager.packetRXDrawY, GuiManager.packetDrawWidth,40)
+        self.lblTXPream.setText("Preamble")
+        self.lblRXPream.setText("Preamble")
+        next+=GuiManager.packetDrawWidth
+        nextRX+=GuiManager.packetDrawWidth
+        #TX Header
         if self.cbTXHeader.currentText() == "Enabled":
-            painter.setBrush(QtGui.QBrush(QtCore.Qt.green, QtCore.Qt.DiagCrossPattern))
-            painter.drawRect(next, GuiManager.packetDrawY, GuiManager.packetDrawWidth,40)
+            painter.setBrush(QtGui.QBrush(QtCore.Qt.green, QtCore.Qt.Dense4Pattern))
+            painter.drawRect(next, GuiManager.packetTXDrawY, GuiManager.packetDrawWidth,40)
             self.lblTXHeader.setText("Header")
             next+=GuiManager.packetDrawWidth
             self.lblTXPayload.setGeometry(GuiManager.packetDrawWidth+self.lblTXHeader.x(), self.lblTXHeader.y(), self.lblTXHeader.width(), self.lblTXHeader.height()) 
@@ -105,24 +123,58 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
             self.lblTXPayload.setGeometry(self.lblTXHeader.x(), self.lblTXHeader.y(), self.lblTXHeader.width(), self.lblTXHeader.height()) 
             self.lblTXCRC.setGeometry(GuiManager.packetDrawWidth+self.lblTXPayload.x(), self.lblTXPayload.y(), self.lblTXPayload.width(), self.lblTXPayload.height()) 
 
-        #Payload
-        #painter.setBrush(QtGui.QBrush(QtCore.Qt.cyan, QtCore.Qt.Dense6Pattern))
-        painter.drawRect(next, GuiManager.packetDrawY, GuiManager.packetDrawWidth,40)
+        #RX Header
+        if self.cbRXHeader.currentText() == "Enabled":
+            painter.setBrush(QtGui.QBrush(QtCore.Qt.green, QtCore.Qt.Dense4Pattern))
+            painter.drawRect(nextRX, GuiManager.packetRXDrawY, GuiManager.packetDrawWidth,40)
+            self.lblRXHeader.setText("Header")
+            nextRX+=GuiManager.packetDrawWidth
+            self.lblRXPayload.setGeometry(GuiManager.packetDrawWidth+self.lblRXHeader.x(), self.lblRXHeader.y(), self.lblRXHeader.width(), self.lblRXHeader.height()) 
+            self.lblRXCRC.setGeometry(GuiManager.packetDrawWidth+self.lblRXPayload.x(), self.lblRXPayload.y(), self.lblRXPayload.width(), self.lblRXPayload.height()) 
+        else:
+            self.lblRXHeader.setText("")
+            self.lblRXPayload.setGeometry(self.lblRXHeader.x(), self.lblRXHeader.y(), self.lblRXHeader.width(), self.lblRXHeader.height()) 
+            self.lblRXCRC.setGeometry(GuiManager.packetDrawWidth+self.lblRXPayload.x(), self.lblRXPayload.y(), self.lblRXPayload.width(), self.lblRXPayload.height()) 
+
+
+        #TX Payload
+        painter.setBrush(QtGui.QBrush(QtCore.Qt.cyan, QtCore.Qt.Dense4Pattern))
+        painter.drawRect(next, GuiManager.packetTXDrawY, GuiManager.packetDrawWidth,40)
         self.lblTXPayload.setText("Payload")
         next+=GuiManager.packetDrawWidth
+
+        #RX Payload
+        painter.setBrush(QtGui.QBrush(QtCore.Qt.cyan, QtCore.Qt.Dense4Pattern))
+        painter.drawRect(nextRX, GuiManager.packetRXDrawY, GuiManager.packetDrawWidth,40)
+        self.lblRXPayload.setText("Payload")
+        nextRX+=GuiManager.packetDrawWidth
         
-        
-        #CRC
-        if self.cbTXCrc.currentText() == "true":
-            painter.setBrush(QtGui.QBrush(QtCore.Qt.magenta, QtCore.Qt.DiagCrossPattern))
-            painter.drawRect(next, GuiManager.packetDrawY, GuiManager.packetDrawWidth,40)
+        #TX CRC
+        if self.cbTXCrc.currentText() == 'true':
+            painter.setBrush(QtGui.QBrush(QtCore.Qt.magenta, QtCore.Qt.Dense4Pattern))
+            painter.drawRect(next, GuiManager.packetTXDrawY, GuiManager.packetDrawWidth,40)
             self.lblTXCRC.setText("CRC")
             next+=GuiManager.packetDrawWidth
+          
         else:
-              self.lblTXCRC.setText("")
+            self.lblTXCRC.setText("")
 
+        #RX CRC
+        if self.cbRXCrc.currentText() == 'true':
+            painter.setBrush(QtGui.QBrush(QtCore.Qt.magenta, QtCore.Qt.Dense4Pattern))
+            painter.drawRect(nextRX, GuiManager.packetRXDrawY, GuiManager.packetDrawWidth,40)
+            self.lblRXCRC.setText("CRC")
+            nextRX+=GuiManager.packetDrawWidth
+        else:
+            self.lblRXCRC.setText("")
+
+       
+        #print(RadioParam.getTOA(float(6,self.cbTXBW.currentText(),GuiManager.comNoSlash(self.cbTXCR.currentText()),int(self.cbTXHeader.currentText()),self.int(cbTXCrc.currentText()),5,5)
+        self.lblTXTOAV.setText(str((RadioParam.getTOA(self.guiManager.getTXSF(),self.guiManager.getTXBW(),self.guiManager.getTXCR(),self.guiManager.getTXHead(),self.guiManager.getTXCrc(),5,len(self.leHexInput.text())))))
+        self.lblLenPacket.setText(str(0.5*len(self.leHexInput.text())))
 
     def CallbackRadioParChange(self):
+        # Call paint Event for redrawing rectangles
         self.update()
 
     def CallbackCom(self):
@@ -140,17 +192,19 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
         self.threadclass = ThreadClass(self)
         self.threadclass.start()
         
+        self.Radio.whoAreYou()
         self.Radio.WhatIsYourName()
-        time.sleep(0.5)
+        time.sleep(.5)
         
         if any(self.Generator.TargetName in s for s in RadioParam.GeneratorNames):
             self.btnComConnect.setText("Disconnect")
             self.CallbackReadRadio()
-            self.enableAppWidgets()
+            self.guiManager.enableAppWidgets()
         else:
             self.USBLink.closePort()
             self.btnComConnect.setText("Connect")
-    
+        
+
     def CallbackStringInpu(self):
         text = self.leStringInput.text().encode()
         self.leHexInput.clear()
@@ -180,22 +234,22 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
         self.leTXFreq.setText(RadioParam.intConstrain(self.leTXFreq.text(),RadioParam.radioMinFreq, RadioParam.radioMaxFreq))
         self.leRXFreq.setText(RadioParam.intConstrain(self.leRXFreq.text(),RadioParam.radioMinFreq, RadioParam.radioMaxFreq))
         self.leTXPower.setText(RadioParam.intConstrain(self.leTXPower.text(),RadioParam.radioMinPower,RadioParam.radioMaxPower))
-        Radio.setTxFreq(RadioParam.actionFlagSetGet,int(self.leTXFreq.text()))
-        Radio.setTXSF(RadioParam.actionFlagSetGet,GuiManager.comboToInt(self.cbTXSF.currentText(),2))
-        Radio.setTXBW(RadioParam.actionFlagSetGet,GuiManager.khzTohz(self.cbTXBW.currentText()))
-        Radio.setTXIQ(RadioParam.actionFlagSetGet,GuiManager.comboBoolToInt(self.cbTXIQ.currentText()))
-        Radio.setTXCR(RadioParam.actionFlagSetGet,GuiManager.comNoSlash(self.cbTXCR.currentText()))
-        Radio.setTXHeaderMode(RadioParam.actionFlagSetGet,GuiManager.comboBoolToInt(self.cbTXHeader.currentText()))
-        Radio.setTxCrc(RadioParam.actionFlagSetGet,GuiManager.comboBoolToInt(self.cbTXCrc.currentText()))
-        Radio.setTXPower(RadioParam.actionFlagSetGet,int(self.leTXPower.text()))
+        Radio.setTxFreq(RadioParam.actionFlagSetGet,self.guiManager.getTXFreq())
+        Radio.setTXSF(RadioParam.actionFlagSetGet,self.guiManager.getTXSF())
+        Radio.setTXBW(RadioParam.actionFlagSetGet,self.guiManager.getTXBW())
+        Radio.setTXIQ(RadioParam.actionFlagSetGet,self.guiManager.getTXIQ())
+        Radio.setTXCR(RadioParam.actionFlagSetGet,self.guiManager.getTXCR())
+        Radio.setTXHeaderMode(RadioParam.actionFlagSetGet,self.guiManager.getTXHead())
+        Radio.setTxCrc(RadioParam.actionFlagSetGet,self.guiManager.getTXCrc())
+        Radio.setTXPower(RadioParam.actionFlagSetGet,self.guiManager.getTXPower())
         
-        Radio.setRxFreq(RadioParam.actionFlagSetGet,int(self.leRXFreq.text()))
-        Radio.setRXSF(RadioParam.actionFlagSetGet,GuiManager.comboToInt(self.cbRXSF.currentText(),2))
-        Radio.setRXBW(RadioParam.actionFlagSetGet,GuiManager.khzTohz(self.cbRXBW.currentText()))
-        Radio.setRXIQ(RadioParam.actionFlagSetGet,GuiManager.comboBoolToInt(self.cbRXIQ.currentText()))
-        Radio.setRXCR(RadioParam.actionFlagSetGet,GuiManager.comNoSlash(self.cbRXCR.currentText()))
-        Radio.setRXHeaderMode(RadioParam.actionFlagSetGet,GuiManager.comboBoolToInt(self.cbRXHeader.currentText()))
-        Radio.RxCrcCheck(RadioParam.actionFlagSetGet,GuiManager.comboBoolToInt(self.cbRXCrc.currentText()))
+        Radio.setRxFreq(RadioParam.actionFlagSetGet,self.guiManager.getRXFreq())
+        Radio.setRXSF(RadioParam.actionFlagSetGet,self.guiManager.getRXSF())
+        Radio.setRXBW(RadioParam.actionFlagSetGet,self.guiManager.getRXBW())
+        Radio.setRXIQ(RadioParam.actionFlagSetGet,self.guiManager.getRXIQ())
+        Radio.setRXCR(RadioParam.actionFlagSetGet,self.guiManager.getRXCR())
+        Radio.setRXHeaderMode(RadioParam.actionFlagSetGet,self.guiManager.getRXHead())
+        Radio.RxCrcCheck(RadioParam.actionFlagSetGet,self.guiManager.getRXCrc())
        #ż Radio.setRXPower(RadioParam.actionFlagSetGet,int(self.leRxPower.text()))
        
     
@@ -221,9 +275,14 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Radio.setStandby()
 
     def CallbackStartTX(self):   
+        self.CallbackWriteRadio()
+        self.Radio.setStandby()
+        self.leTXPower.setText(RadioParam.intConstrain(self.leTXPower.text(),RadioParam.radioMinPower,RadioParam.radioMaxPower))
+        self.Radio.setTXPower(RadioParam.actionFlagSetGet,self.guiManager.getTXPower())
         self.Radio.startTXCW()
 
     def CallbackSendPacket(self):
+        self.Radio.setStandby()
         self.CallbackWriteRadio()
         self.Radio.preparePacket(RadioParam.actionFlagSet,self.leHexInput.text())
         self.Radio.sendPacket()
@@ -231,51 +290,7 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
     def fillTxFreq(self,freq):
         self.leTXFreq.setText(freq)
 
-    def dissableAppWidgets(self):
-        GuiManager.groupboxDisable(self.groupBox)
-        # GuiManager.editTextDisable(self.leTXFreq)
-        # GuiManager.editTextDisable(self.leRXFreq)
-        # GuiManager.comboBoxDisable(self.cbTXSF)
-        # GuiManager.comboBoxDisable(self.cbRXSF)
-        # GuiManager.comboBoxDisable(self.cbTXBW)
-        # GuiManager.comboBoxDisable(self.cbRXBW)
-        # GuiManager.comboBoxDisable(self.cbTXIQ)
-        # GuiManager.comboBoxDisable(self.cbRXIQ)
-        # GuiManager.comboBoxDisable(self.cbTXCR)
-        # GuiManager.comboBoxDisable(self.cbRXCR)
-        # GuiManager.comboBoxDisable(self.cbTXHeader)
-        # GuiManager.comboBoxDisable(self.cbRXHeader)
-        # GuiManager.comboBoxDisable(self.cbTXCrc)
-        # GuiManager.comboBoxDisable(self.cbRXCrc)
-        # GuiManager.editTextDisable(self.leTXPower)
-        # GuiManager.btnDisable(self.buttonWriteRadio)
-        # GuiManager.btnDisable(self.buttonReadRadio)
-        # GuiManager.btnDisable(self.btnStandby)
-        # GuiManager.btnDisable(self.btnTXCW)
-
-    def enableAppWidgets(self):
-        GuiManager.groupboxEnable(self.groupBox)
-        # GuiManager.editTextEnable(self.leTXFreq)
-        # GuiManager.editTextEnable(self.leRXFreq)
-        # GuiManager.comboBoxEnable(self.cbTXSF)
-        # GuiManager.comboBoxEnable(self.cbRXSF)
-        # GuiManager.comboBoxEnable(self.cbTXBW)
-        # GuiManager.comboBoxEnable(self.cbRXBW)
-        # GuiManager.comboBoxEnable(self.cbTXIQ)
-        # GuiManager.comboBoxEnable(self.cbRXIQ)
-        # GuiManager.comboBoxEnable(self.cbTXCR)
-        # GuiManager.comboBoxEnable(self.cbRXCR)
-        # GuiManager.comboBoxEnable(self.cbTXHeader)
-        # GuiManager.comboBoxEnable(self.cbRXHeader)
-        # GuiManager.comboBoxEnable(self.cbTXCrc)
-        # GuiManager.comboBoxEnable(self.cbRXCrc)
-        # GuiManager.editTextEnable(self.leTXPower)
-        # GuiManager.btnEnable(self.buttonWriteRadio)
-        # GuiManager.btnEnable(self.buttonReadRadio)
-        # GuiManager.btnEnable(self.btnStandby)
-        # GuiManager.btnEnable(self.btnTXCW)
-        
-
+    
     def isInt(self,str):
         try: 
             int(str)
@@ -290,7 +305,7 @@ class ThreadClass(QtCore.QThread):
         self.mainWin = mainwindow
 
     def run(self):
-        #ptvsd.debug_this_thread()
+        ptvsd.debug_this_thread()
         while True: 
             rxData = bytearray()
             result,rxData = USBLink.rxUSBRFLink(rxData,0)    

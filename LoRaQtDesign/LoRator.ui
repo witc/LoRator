@@ -41,7 +41,8 @@
      <bool>false</bool>
     </property>
     <property name="styleSheet">
-     <string notr="true">color: rgb(65, 167, 222);</string>
+     <string notr="true">color: rgb(65, 167, 222);
+</string>
     </property>
     <property name="title">
      <string>Radio Settings</string>
@@ -58,26 +59,6 @@
      <property name="text">
       <string>15</string>
      </property>
-    </widget>
-    <widget class="QComboBox" name="cbTXCrc">
-     <property name="geometry">
-      <rect>
-       <x>160</x>
-       <y>300</y>
-       <width>81</width>
-       <height>22</height>
-      </rect>
-     </property>
-     <item>
-      <property name="text">
-       <string>true</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>false</string>
-      </property>
-     </item>
     </widget>
     <widget class="QComboBox" name="cbRXIQ">
      <property name="geometry">
@@ -225,12 +206,12 @@
      </property>
      <item>
       <property name="text">
-       <string>Enabled</string>
+       <string>Disabled</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Disabled</string>
+       <string>Enabled</string>
       </property>
      </item>
     </widget>
@@ -269,12 +250,12 @@
      </property>
      <item>
       <property name="text">
-       <string>true</string>
+       <string>false</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>false</string>
+       <string>true</string>
       </property>
      </item>
     </widget>
@@ -732,12 +713,12 @@
      </property>
      <item>
       <property name="text">
-       <string>Enabled</string>
+       <string>Disabled</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Disabled</string>
+       <string>Enabled</string>
       </property>
      </item>
     </widget>
@@ -767,12 +748,32 @@
       <string>TX CW</string>
      </property>
     </widget>
+    <widget class="QComboBox" name="cbTXCrc">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>300</y>
+       <width>81</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>false</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>true</string>
+      </property>
+     </item>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>430</x>
-      <y>310</y>
+      <x>450</x>
+      <y>370</y>
       <width>671</width>
       <height>321</height>
      </rect>
@@ -959,7 +960,7 @@ color: white;
     <widget class="QLabel" name="lblMinPower">
      <property name="geometry">
       <rect>
-       <x>472</x>
+       <x>700</x>
        <y>30</y>
        <width>91</width>
        <height>21</height>
@@ -977,7 +978,7 @@ color: white;
     <widget class="QLabel" name="lblMaxPower">
      <property name="geometry">
       <rect>
-       <x>312</x>
+       <x>550</x>
        <y>30</y>
        <width>91</width>
        <height>21</height>
@@ -995,9 +996,9 @@ color: white;
     <widget class="QLabel" name="lblMinPowerV">
      <property name="geometry">
       <rect>
-       <x>562</x>
+       <x>790</x>
        <y>30</y>
-       <width>61</width>
+       <width>31</width>
        <height>21</height>
       </rect>
      </property>
@@ -1047,9 +1048,9 @@ color: white;
     <widget class="QLabel" name="lblMaxPowerV">
      <property name="geometry">
       <rect>
-       <x>402</x>
+       <x>650</x>
        <y>30</y>
-       <width>61</width>
+       <width>31</width>
        <height>21</height>
       </rect>
      </property>
@@ -1066,7 +1067,7 @@ color: white;
     <widget class="QLabel" name="lblDevName">
      <property name="geometry">
       <rect>
-       <x>162</x>
+       <x>150</x>
        <y>30</y>
        <width>141</width>
        <height>21</height>
@@ -1082,12 +1083,49 @@ color: white;
       <string/>
      </property>
     </widget>
+    <widget class="QLabel" name="lblDev_2">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>30</y>
+       <width>31</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>ID:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblDevName_2">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>30</y>
+       <width>201</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe Print</family>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>ID:</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QLabel" name="label_15">
     <property name="geometry">
      <rect>
       <x>460</x>
-      <y>150</y>
+      <y>130</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -1100,7 +1138,7 @@ color: white;
     <property name="geometry">
      <rect>
       <x>460</x>
-      <y>200</y>
+      <y>230</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -1113,10 +1151,17 @@ color: white;
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>150</y>
+      <y>130</y>
       <width>71</width>
       <height>16</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="text">
      <string>Tx packet:</string>
@@ -1126,10 +1171,17 @@ color: white;
     <property name="geometry">
      <rect>
       <x>650</x>
-      <y>150</y>
+      <y>130</y>
       <width>71</width>
       <height>16</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="text">
      <string>Tx packet:</string>
@@ -1139,10 +1191,17 @@ color: white;
     <property name="geometry">
      <rect>
       <x>750</x>
-      <y>150</y>
+      <y>130</y>
       <width>71</width>
       <height>16</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="text">
      <string>Tx packet:</string>
@@ -1152,10 +1211,17 @@ color: white;
     <property name="geometry">
      <rect>
       <x>850</x>
-      <y>150</y>
+      <y>130</y>
       <width>71</width>
       <height>16</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="text">
      <string>Tx packet:</string>
@@ -1165,10 +1231,17 @@ color: white;
     <property name="geometry">
      <rect>
       <x>850</x>
-      <y>200</y>
+      <y>230</y>
       <width>71</width>
       <height>16</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="text">
      <string>Tx packet:</string>
@@ -1178,10 +1251,17 @@ color: white;
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>200</y>
+      <y>230</y>
       <width>71</width>
       <height>16</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="text">
      <string>Tx packet:</string>
@@ -1191,10 +1271,17 @@ color: white;
     <property name="geometry">
      <rect>
       <x>750</x>
-      <y>200</y>
+      <y>230</y>
       <width>71</width>
       <height>16</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="text">
      <string>Tx packet:</string>
@@ -1204,13 +1291,420 @@ color: white;
     <property name="geometry">
      <rect>
       <x>650</x>
-      <y>200</y>
+      <y>230</y>
       <width>71</width>
       <height>16</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
     <property name="text">
      <string>Tx packet:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblTXPayload_2">
+    <property name="geometry">
+     <rect>
+      <x>750</x>
+      <y>170</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Tx packet:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblTXCRC_2">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>170</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Tx packet:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblTXPream_2">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>170</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Tx packet:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblTXHeader_2">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>170</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Tx packet:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblRXPream_2">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>270</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Tx packet:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblRXCRC_2">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>270</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Tx packet:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblRXHeader_2">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>270</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Tx packet:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblRXPayload_2">
+    <property name="geometry">
+     <rect>
+      <x>750</x>
+      <y>270</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Tx packet:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblTXTOA">
+    <property name="geometry">
+     <rect>
+      <x>960</x>
+      <y>120</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>TOA: [ms]</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblTXSymTime">
+    <property name="geometry">
+     <rect>
+      <x>960</x>
+      <y>150</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Symbol time:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblTXSize">
+    <property name="geometry">
+     <rect>
+      <x>960</x>
+      <y>180</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Total size:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblTXSizeV">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>170</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblTXSymTimeV">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>140</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblTXTOAV">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>110</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblRXSize_3">
+    <property name="geometry">
+     <rect>
+      <x>960</x>
+      <y>280</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Total size:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblRXSymTime_3">
+    <property name="geometry">
+     <rect>
+      <x>960</x>
+      <y>250</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Symbol time:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblRXTOA_3">
+    <property name="geometry">
+     <rect>
+      <x>960</x>
+      <y>220</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>TOA: [ms]</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblRXSymTimeV">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>250</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblRXTOA">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>220</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblRXSizeV">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>280</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
   </widget>
