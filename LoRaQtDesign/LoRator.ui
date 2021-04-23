@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1167</width>
+    <width>1149</width>
     <height>871</height>
    </rect>
   </property>
@@ -20,10 +20,10 @@
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>30</x>
       <y>110</y>
       <width>391</width>
-      <height>511</height>
+      <height>481</height>
      </rect>
     </property>
     <property name="font">
@@ -286,7 +286,7 @@
     <widget class="QPushButton" name="buttonWriteRadio">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>40</x>
        <y>390</y>
        <width>141</width>
        <height>27</height>
@@ -564,7 +564,7 @@
     <widget class="QPushButton" name="buttonReadRadio">
      <property name="geometry">
       <rect>
-       <x>220</x>
+       <x>210</x>
        <y>390</y>
        <width>141</width>
        <height>27</height>
@@ -725,7 +725,7 @@
     <widget class="QPushButton" name="btnStandby">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>60</x>
        <y>430</y>
        <width>89</width>
        <height>27</height>
@@ -738,7 +738,7 @@
     <widget class="QPushButton" name="btnTXCW">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>230</x>
        <y>430</y>
        <width>89</width>
        <height>27</height>
@@ -773,9 +773,9 @@
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>370</y>
+      <y>340</y>
       <width>671</width>
-      <height>321</height>
+      <height>241</height>
      </rect>
     </property>
     <property name="title">
@@ -784,8 +784,8 @@
     <widget class="QPushButton" name="pushButton_6">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>240</y>
+       <x>270</x>
+       <y>200</y>
        <width>89</width>
        <height>27</height>
       </rect>
@@ -794,23 +794,10 @@
       <string>Send Packet</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_4">
-     <property name="geometry">
-      <rect>
-       <x>160</x>
-       <y>250</y>
-       <width>89</width>
-       <height>27</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Start RX</string>
-     </property>
-    </widget>
     <widget class="QLineEdit" name="leHexInput">
      <property name="geometry">
       <rect>
-       <x>40</x>
+       <x>30</x>
        <y>60</y>
        <width>621</width>
        <height>41</height>
@@ -828,7 +815,7 @@
     <widget class="QLabel" name="label">
      <property name="geometry">
       <rect>
-       <x>40</x>
+       <x>30</x>
        <y>30</y>
        <width>111</width>
        <height>21</height>
@@ -846,8 +833,8 @@
     <widget class="QLineEdit" name="leStringInput">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>170</y>
+       <x>30</x>
+       <y>140</y>
        <width>621</width>
        <height>41</height>
       </rect>
@@ -859,8 +846,8 @@
     <widget class="QLabel" name="label_12">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>140</y>
+       <x>30</x>
+       <y>110</y>
        <width>111</width>
        <height>21</height>
       </rect>
@@ -895,37 +882,37 @@
     <widget class="QLabel" name="label_14">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>250</x>
        <y>30</y>
-       <width>101</width>
+       <width>141</width>
        <height>21</height>
       </rect>
      </property>
      <property name="text">
-      <string>Payload Length:</string>
+      <string>Payload Length [Bytes]:</string>
      </property>
     </widget>
     <widget class="QLabel" name="lblLenPacket">
      <property name="geometry">
       <rect>
-       <x>230</x>
+       <x>400</x>
        <y>30</y>
        <width>51</width>
        <height>21</height>
       </rect>
      </property>
      <property name="text">
-      <string>jn</string>
+      <string>0</string>
      </property>
     </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_3">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>10</y>
-      <width>1111</width>
-      <height>71</height>
+      <x>0</x>
+      <y>0</y>
+      <width>1151</width>
+      <height>91</height>
      </rect>
     </property>
     <property name="font">
@@ -947,8 +934,8 @@ color: white;
     <widget class="QPushButton" name="btnComConnect">
      <property name="geometry">
       <rect>
-       <x>980</x>
-       <y>20</y>
+       <x>1030</x>
+       <y>30</y>
        <width>91</width>
        <height>31</height>
       </rect>
@@ -960,8 +947,8 @@ color: white;
     <widget class="QLabel" name="lblMinPower">
      <property name="geometry">
       <rect>
-       <x>700</x>
-       <y>30</y>
+       <x>510</x>
+       <y>50</y>
        <width>91</width>
        <height>21</height>
       </rect>
@@ -978,8 +965,8 @@ color: white;
     <widget class="QLabel" name="lblMaxPower">
      <property name="geometry">
       <rect>
-       <x>550</x>
-       <y>30</y>
+       <x>510</x>
+       <y>10</y>
        <width>91</width>
        <height>21</height>
       </rect>
@@ -996,9 +983,9 @@ color: white;
     <widget class="QLabel" name="lblMinPowerV">
      <property name="geometry">
       <rect>
-       <x>790</x>
-       <y>30</y>
-       <width>31</width>
+       <x>610</x>
+       <y>50</y>
+       <width>51</width>
        <height>21</height>
       </rect>
      </property>
@@ -1009,14 +996,14 @@ color: white;
       </font>
      </property>
      <property name="text">
-      <string/>
+      <string>min</string>
      </property>
     </widget>
     <widget class="QComboBox" name="comboBox">
      <property name="geometry">
       <rect>
-       <x>850</x>
-       <y>20</y>
+       <x>900</x>
+       <y>30</y>
        <width>111</width>
        <height>31</height>
       </rect>
@@ -1030,8 +1017,8 @@ color: white;
     <widget class="QLabel" name="lblDev">
      <property name="geometry">
       <rect>
-       <x>12</x>
-       <y>30</y>
+       <x>20</x>
+       <y>10</y>
        <width>141</width>
        <height>21</height>
       </rect>
@@ -1048,9 +1035,9 @@ color: white;
     <widget class="QLabel" name="lblMaxPowerV">
      <property name="geometry">
       <rect>
-       <x>650</x>
-       <y>30</y>
-       <width>31</width>
+       <x>610</x>
+       <y>10</y>
+       <width>51</width>
        <height>21</height>
       </rect>
      </property>
@@ -1061,14 +1048,14 @@ color: white;
       </font>
      </property>
      <property name="text">
-      <string/>
+      <string>max</string>
      </property>
     </widget>
     <widget class="QLabel" name="lblDevName">
      <property name="geometry">
       <rect>
-       <x>150</x>
-       <y>30</y>
+       <x>160</x>
+       <y>10</y>
        <width>141</width>
        <height>21</height>
       </rect>
@@ -1080,14 +1067,14 @@ color: white;
       </font>
      </property>
      <property name="text">
-      <string/>
+      <string>dev</string>
      </property>
     </widget>
     <widget class="QLabel" name="lblDev_2">
      <property name="geometry">
       <rect>
-       <x>310</x>
-       <y>30</y>
+       <x>20</x>
+       <y>50</y>
        <width>31</width>
        <height>21</height>
       </rect>
@@ -1104,8 +1091,8 @@ color: white;
     <widget class="QLabel" name="lblDevName_2">
      <property name="geometry">
       <rect>
-       <x>340</x>
-       <y>30</y>
+       <x>50</x>
+       <y>50</y>
        <width>201</width>
        <height>21</height>
       </rect>
@@ -1531,7 +1518,7 @@ color: white;
     <property name="geometry">
      <rect>
       <x>1050</x>
-      <y>170</y>
+      <y>180</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -1551,7 +1538,7 @@ color: white;
     <property name="geometry">
      <rect>
       <x>1050</x>
-      <y>140</y>
+      <y>150</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -1571,7 +1558,7 @@ color: white;
     <property name="geometry">
      <rect>
       <x>1050</x>
-      <y>110</y>
+      <y>120</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -1707,13 +1694,168 @@ color: white;
      <string/>
     </property>
    </widget>
+   <widget class="QGroupBox" name="groupBox_4">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>610</y>
+      <width>271</width>
+      <height>161</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:rgb(255, 57, 159)</string>
+    </property>
+    <property name="title">
+     <string>Rx Settings</string>
+    </property>
+    <widget class="QPushButton" name="btnRX">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>110</y>
+       <width>89</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Start RX</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_16">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>40</y>
+       <width>81</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Single RX:</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkboxSingeRX">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>40</y>
+       <width>78</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>true</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_18">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>70</y>
+       <width>101</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Payload Size:</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lePayloadSize">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>70</y>
+       <width>71</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>10</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QTextBrowser" name="tbRX">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>640</y>
+      <width>801</width>
+      <height>131</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_19">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>610</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Rssi: [dBm]</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblRssi">
+    <property name="geometry">
+     <rect>
+      <x>420</x>
+      <y>610</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnClear">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>780</y>
+      <width>89</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Clear</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1167</width>
+     <width>1149</width>
      <height>25</height>
     </rect>
    </property>

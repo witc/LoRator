@@ -1,7 +1,7 @@
 import math
 
 RfBW = [7810,10420,15630,20830,31250,41670,62500,125000,250000,500000]
-GeneratorNames = ["LoRaUSBStick ","LoRaUSBAtten "]
+GeneratorNames = ["LoRaUSBStick ","LoRaGenerator "]
 radioMinFreq = 150000000
 radioMaxFreq = 960000000
 radioMinPower = -9
@@ -45,7 +45,7 @@ def intConstrain(data, min, max):
         elif num > max:
             return (str(max))
         else:
-           return data
+           return str(int(data))
 
 def calcNOfSymbol(crc,preambleSize, payloadSize, sf, header,cr):
 

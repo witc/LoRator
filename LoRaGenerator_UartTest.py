@@ -44,9 +44,74 @@ RadioOpCodeSwitcher = {
         19: Radio.saveAutoRepeating,
         20: Radio.saveRadioStatus,
         21: Radio.saveRadioStatus,
+        249:Radio.saveRxPacket,
         253: Radio.saveTargetName,
         254:Radio.saveWhoAreYou,
     }
+
+
+class UartThread(QtCore.QThread):
+    def __init__(self, mainwindow, parent = None):
+        super(UartThread,self).__init__(parent)
+        self.mainWin = mainwindow
+        self.is_paused = False
+
+    def run(self):
+        ptvsd.debug_this_thread()
+        while True:
+            while self.is_paused == True: 
+                time.sleep(0)
+
+            rxData = bytearray()
+            result,rxData = USBLink.rxUSBRFLink(rxData,0)    
+    
+            if result == "answerOk":
+                #TODO make a dictionary
+                self.CallbackUartRx(rxData) 
+            # print("prijata data")
+            elif result == "portLost":
+                self.mainWin.btnComConnect.setText("Connect")
+                self.mainWin.scanPorts()
+                self.mainWin.guiManager.dissableAppWidgets()
+                USBLink.closePort()
+                self.pauseTask()
+                self.mainWin.scanPortsThread.continueTask()
+
+            #self.Radio.WhatIsYourName()
+    def pauseTask(self):
+        self.is_paused = True
+
+    def continueTask(self):
+        self.is_paused = False
+
+    def CallbackUartRx(self,rxData):
+    
+        cmd = ord(rxData[0])
+        RadioOpCodeSwitcher.get(cmd)(rxData,Generator1,self.mainWin)
+        self.mainWin.CallbackRadioParChange()
+        
+
+class ScanPortsThread(QtCore.QThread):
+    def __init__(self, mainwindow, parent = None):
+        super(ScanPortsThread,self).__init__(parent)
+        self.mainWin = mainwindow
+        self.is_paused = False
+
+    def run(self):
+        ptvsd.debug_this_thread()
+        while True:
+            while self.is_paused == True: 
+                time.sleep(0)
+            
+            self.mainWinself.scanPorts()
+            time.sleep(0.5)
+
+            #self.Radio.WhatIsYourName()
+    def pauseTask(self):
+        self.is_paused = True
+
+    def continueTask(self):
+        self.is_paused = False
 
 class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self,radio,usblink, generator ,parent=None):
@@ -60,10 +125,11 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
         self.guiManager = GuiManager.GuiManager(self)
         print(self.guiManager.getTXSF())
         # scan Serial ports
-        self.comboBox.clear() 
-        self.USBLink.scanUSBRfLink()
-        self.comboBox.addItems(self.USBLink.getPossibleComs())
+        self.scanPorts()
         self.btnComConnect.clicked.connect(self.CallbackCom)
+        self.scanPortsThread = ScanPortsThread(self)
+        self.scanPortsThread.pauseTask()
+        #self.comboBox.activated.connect(self.scanPorts)
         
         self.onlyInt = QtGui.QIntValidator()
         self.onlyHex = QtGui.QRegExpValidator(QRegExp("[0-9A-Fa-f]{1,100}"))
@@ -76,6 +142,7 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
         self.cbTXBW.currentTextChanged.connect(self.CallbackRadioParChange)
         self.cbTXIQ.currentTextChanged.connect(self.CallbackRadioParChange)
         self.cbTXCR.currentTextChanged.connect(self.CallbackRadioParChange)
+        self.cbTXCrc.currentTextChanged.connect(self.CallbackRadioParChange)
         
         self.cbRXHeader.currentTextChanged.connect(self.CallbackRadioParChange)
         self.cbRXSF.currentTextChanged.connect(self.CallbackRadioParChange)
@@ -84,25 +151,30 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
         self.cbRXCR.currentTextChanged.connect(self.CallbackRadioParChange)
         self.cbRXCrc.currentTextChanged.connect(self.CallbackRadioParChange)
         
-
         self.guiManager.dissableAppWidgets()
         self.buttonWriteRadio.clicked.connect(self.CallbackWriteRadio)
         self.buttonReadRadio.clicked.connect(self.CallbackReadRadio)
         self.btnStandby.clicked.connect(self.CallbackSetStandby)
         self.btnTXCW.clicked.connect(self.CallbackStartTX)
         self.pushButton_6.clicked.connect(self.CallbackSendPacket)       
+        self.btnRX.clicked.connect(self.CallbackStartRX)       
+        self.btnClear.clicked.connect(self.CallbackClearRx)
+
+    def scanPorts(self):
+        self.comboBox.clear() 
+        self.USBLink.scanUSBRfLink()
+        self.comboBox.addItems(self.USBLink.getPossibleComs())
+        
 
     def paintEvent(self,e):
         #self.guiManager.updatePacketDrawing(e)
         painter = QtGui.QPainter(self)
         painter.setPen(QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine))
-        #painter.eraseRect(GuiManager.packetDrawX, GuiManager.packetTXDrawY-20, 5000,400)
-        #painter.eraseRect(GuiManager.packetDrawX, GuiManager.packetRXDrawY-20, 5000,400)
         painter.setBrush(QtGui.QBrush(QtCore.Qt.darkGreen, QtCore.Qt.Dense4Pattern ))
 
         next = GuiManager.packetDrawX
         nextRX = GuiManager.packetDrawX
-        
+
         #Preamble
         painter.drawRect(next, GuiManager.packetTXDrawY, GuiManager.packetDrawWidth,40)
         painter.drawRect(next, GuiManager.packetRXDrawY, GuiManager.packetDrawWidth,40)
@@ -136,7 +208,6 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
             self.lblRXPayload.setGeometry(self.lblRXHeader.x(), self.lblRXHeader.y(), self.lblRXHeader.width(), self.lblRXHeader.height()) 
             self.lblRXCRC.setGeometry(GuiManager.packetDrawWidth+self.lblRXPayload.x(), self.lblRXPayload.y(), self.lblRXPayload.width(), self.lblRXPayload.height()) 
 
-
         #TX Payload
         painter.setBrush(QtGui.QBrush(QtCore.Qt.cyan, QtCore.Qt.Dense4Pattern))
         painter.drawRect(next, GuiManager.packetTXDrawY, GuiManager.packetDrawWidth,40)
@@ -168,7 +239,6 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             self.lblRXCRC.setText("")
 
-       
         #print(RadioParam.getTOA(float(6,self.cbTXBW.currentText(),GuiManager.comNoSlash(self.cbTXCR.currentText()),int(self.cbTXHeader.currentText()),self.int(cbTXCrc.currentText()),5,5)
         self.lblTXTOAV.setText(str((RadioParam.getTOA(self.guiManager.getTXSF(),self.guiManager.getTXBW(),self.guiManager.getTXCR(),self.guiManager.getTXHead(),self.guiManager.getTXCrc(),5,len(self.leHexInput.text())))))
         self.lblLenPacket.setText(str(0.5*len(self.leHexInput.text())))
@@ -177,32 +247,42 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
         # Call paint Event for redrawing rectangles
         self.update()
 
-    def CallbackCom(self):
-        if self.USBLink.isPortOpen() == True:
-            self.USBLink.closePort()
-            self.btnComConnect.setText("Connect")
+        if (self.cbRXHeader.currentText() == "Enabled"):
+            self.guiManager.editTextDisable(self.lePayloadSize)
+        else:
+            self.guiManager.editTextEnable(self.lePayloadSize)    
 
+    def CallbackCom(self):
+        #Connect/disconnect
+        if self.USBLink.isPortOpen() == True:
+            self.uartThread.pauseTask()
+            self.USBLink.closePort()
+            self.guiManager.dissableAppWidgets()
+            self.scanPorts()
+            self.btnComConnect.setText("Connect")
+            
         else:
             self.btnComConnect.setText("Connecting")
             if self.USBLink.openPort(self.comboBox.currentText()) != True:
+                self.scanPorts()
                 self.btnComConnect.setText("Connect")
                 return False
 
-        #now port is open  
-        self.threadclass = ThreadClass(self)
-        self.threadclass.start()
-        
-        self.Radio.whoAreYou()
-        self.Radio.WhatIsYourName()
-        time.sleep(.5)
-        
-        if any(self.Generator.TargetName in s for s in RadioParam.GeneratorNames):
-            self.btnComConnect.setText("Disconnect")
-            self.CallbackReadRadio()
-            self.guiManager.enableAppWidgets()
-        else:
-            self.USBLink.closePort()
-            self.btnComConnect.setText("Connect")
+            #now port is open  
+            self.uartThread = UartThread(self)
+            self.uartThread.start()
+            
+            self.Radio.whoAreYou()
+            self.Radio.WhatIsYourName()
+            time.sleep(.5)
+            
+            if any(self.Generator.TargetName in s for s in RadioParam.GeneratorNames):
+                self.btnComConnect.setText("Disconnect")
+                self.CallbackReadRadio()
+                self.guiManager.enableAppWidgets()
+            else:
+                self.USBLink.closePort()
+                self.btnComConnect.setText("Connect")
         
 
     def CallbackStringInpu(self):
@@ -233,7 +313,7 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
     def CallbackWriteRadio(self):
         self.leTXFreq.setText(RadioParam.intConstrain(self.leTXFreq.text(),RadioParam.radioMinFreq, RadioParam.radioMaxFreq))
         self.leRXFreq.setText(RadioParam.intConstrain(self.leRXFreq.text(),RadioParam.radioMinFreq, RadioParam.radioMaxFreq))
-        self.leTXPower.setText(RadioParam.intConstrain(self.leTXPower.text(),RadioParam.radioMinPower,RadioParam.radioMaxPower))
+        self.leTXPower.setText((RadioParam.intConstrain(float(self.leTXPower.text()),int(Generator1.TargetMinPower),int(Generator1.TargetMaxPower))))
         Radio.setTxFreq(RadioParam.actionFlagSetGet,self.guiManager.getTXFreq())
         Radio.setTXSF(RadioParam.actionFlagSetGet,self.guiManager.getTXSF())
         Radio.setTXBW(RadioParam.actionFlagSetGet,self.guiManager.getTXBW())
@@ -277,7 +357,7 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
     def CallbackStartTX(self):   
         self.CallbackWriteRadio()
         self.Radio.setStandby()
-        self.leTXPower.setText(RadioParam.intConstrain(self.leTXPower.text(),RadioParam.radioMinPower,RadioParam.radioMaxPower))
+        self.leTXPower.setText((RadioParam.intConstrain(float(self.leTXPower.text()),int(Generator1.TargetMinPower),int(Generator1.TargetMaxPower))))
         self.Radio.setTXPower(RadioParam.actionFlagSetGet,self.guiManager.getTXPower())
         self.Radio.startTXCW()
 
@@ -287,10 +367,23 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Radio.preparePacket(RadioParam.actionFlagSet,self.leHexInput.text())
         self.Radio.sendPacket()
     
+    def CallbackStartRX(self):
+        self.lePayloadSize.setText(RadioParam.intConstrain(self.lePayloadSize.text(),1,250))
+        self.Radio.setStandby()
+        self.CallbackWriteRadio()
+        
+        single = False
+        if self.checkboxSingeRX.isChecked() == True:
+            single = True
+
+        self.Radio.startRX(single,int(self.lePayloadSize.text()))
+
+    def CallbackClearRx(self):
+        self.tbRX.clear()
+
     def fillTxFreq(self,freq):
         self.leTXFreq.setText(freq)
 
-    
     def isInt(self,str):
         try: 
             int(str)
@@ -298,31 +391,6 @@ class MainUIClass(QtWidgets.QMainWindow, Ui_MainWindow):
         except ValueError:
             return False
        
-
-class ThreadClass(QtCore.QThread):
-    def __init__(self, mainwindow, parent = None):
-        super(ThreadClass,self).__init__(parent)
-        self.mainWin = mainwindow
-
-    def run(self):
-        ptvsd.debug_this_thread()
-        while True: 
-            rxData = bytearray()
-            result,rxData = USBLink.rxUSBRFLink(rxData,0)    
-            #self.mainWin.leTXFreq.setText("uvodime")
-    
-            if result == "answerOk":
-                #TODO make a dictionary
-                self.CallbackUartRx(rxData) 
-               # print("prijata data")
-            
-            #self.Radio.WhatIsYourName()
-
-    def CallbackUartRx(self,rxData):
-    
-        cmd = ord(rxData[0])
-        RadioOpCodeSwitcher.get(cmd)(rxData,Generator1,self.mainWin)
-
 
 def AppWindow():
 

@@ -2,6 +2,7 @@ import numpy as np
 import binascii
 import time 
 import USB2Uart
+from PyQt5 import  QtGui
 
 glEndian='big'
 crc8tab = []
@@ -47,8 +48,9 @@ RadioOpCode = {
     
     "PreparePacket": 16,
     "AutoRepeating": 19,
-    "StartRx": 20,
     
+    "StartRX": 248,
+    "readRxPacket": 249,
     "Standby": 250,
     "StartTXCW": 251,
     "SendPacket": 252,
@@ -61,6 +63,7 @@ class RadioCmds:
     
     def __init__(self,port):
         self.port = port
+        self.color = 1
 
     def setTxFreq(self,actionFlag, freq):
         serialPacket=[RadioOpCode["TxFreq"].to_bytes(1,byteorder = glEndian),actionFlag.to_bytes(1,byteorder = glEndian), freq.to_bytes(4,byteorder = glEndian)]
@@ -134,11 +137,6 @@ class RadioCmds:
         serialPacket=[RadioOpCode["AutoRepeating"].to_bytes(1,byteorder = glEndian),actionFlag.to_bytes(1,byteorder = glEndian),repeatPeriod.to_bytes(4,byteorder = glEndian)]
         self.wrapPacket((serialPacket))
 
-    def startRx(self,timeout):
-        cmdStartRx = 21
-        serialPacket=[cmdStartRx.to_bytes(1,byteorder = glEndian),timeout.to_bytes(4,byteorder = glEndian)]
-        self.wrapPacket((serialPacket))
-
 ##################################################################################################
 
     def WhatIsYourName(self):
@@ -161,6 +159,9 @@ class RadioCmds:
         serialPacket=[RadioOpCode["Standby"].to_bytes(1,byteorder = glEndian)]
         self.wrapPacket((serialPacket))
 
+    def startRX(self,single,payloadSize):
+        serialPacket=[RadioOpCode["StartRX"].to_bytes(1,byteorder = glEndian),single.to_bytes(1,byteorder = glEndian),payloadSize.to_bytes(1,byteorder = glEndian)]
+        self.wrapPacket((serialPacket))
     ###################################################################################################
     #               D E C O D I N G
     ###################################################################################################
@@ -195,7 +196,7 @@ class RadioCmds:
     def saveRxSf(self,rxData, generator,mainWin):
         sf = self.bytesToOrd(rxData[1:],1)
         generator.RXSF = int.from_bytes(sf,byteorder='little')
-        tmpText = "SF"+str(generator.TXSF)
+        tmpText = "SF"+str(generator.RXSF)
         index = mainWin.cbRXSF.findText(tmpText)
         if index >= 0:
             mainWin.cbRXSF.setCurrentIndex(index)
@@ -323,21 +324,54 @@ class RadioCmds:
     def saveHeaderMTx(self,rxData, generator,mainWin):
         sf = self.bytesToOrd(rxData[1:],1)
         generator.TXHeaderMode = int.from_bytes(sf,byteorder='little')
+
+        tmpText = "Disabled"
+        if generator.TXHeaderMode == 1:
+            tmpText = "Enabled"
+        index = mainWin.cbTXHeader.findText(tmpText)
+        if index >= 0:
+            mainWin.cbTXHeader.setCurrentIndex(index)
+
         print("TX Header: {}".format(generator.TXHeaderMode))
 
     def saveHeaderMRx(self,rxData, generator,mainWin):
         sf = self.bytesToOrd(rxData[1:],1)
         generator.RXHeaderMode = int.from_bytes(sf,byteorder='little')
+        
+        tmpText = "Disabled"
+        if generator.RXHeaderMode == 1:
+            tmpText = "Enabled"
+        index = mainWin.cbRXHeader.findText(tmpText)
+        if index >= 0:
+            mainWin.cbRXHeader.setCurrentIndex(index)
+
         print("RX Header: {}".format(generator.RXHeaderMode))
 
     def saveRxCRC(self,rxData, generator,mainWin):
         sf = self.bytesToOrd(rxData[1:],1)
         generator.RXCRC = int.from_bytes(sf,byteorder='little')
+
+        tmpText = "false"
+        if generator.RXCRC == 1:
+            tmpText = "true"
+        index = mainWin.cbRXCrc.findText(tmpText)
+        if index >= 0:
+            mainWin.cbRXCrc.setCurrentIndex(index)
+
         print("RX CRC: {}".format(generator.RXCRC))    
 
     def saveTxCRC(self,rxData, generator,mainWin):
         sf = self.bytesToOrd(rxData[1:],1)
         generator.TXCRC = int.from_bytes(sf,byteorder='little')
+        
+        tmpText = "false"
+        if generator.TXCRC == 1:
+            tmpText = "true"
+        
+        index = mainWin.cbTXCrc.findText(tmpText)
+        if index >= 0:
+            mainWin.cbTXCrc.setCurrentIndex(index)
+
         print("TX CRC: {}".format(generator.TXCRC))    
 
     def saveRadioStatus(self,rxData, generator,mainWin):
@@ -350,6 +384,37 @@ class RadioCmds:
         generator.AutoRepeating = int.from_bytes(sf,byteorder='little')
         print("RX SF: {}".format(generator.AutoRepeating))        
    
+    def saveRxPacket(self,rxData,generator,mainWin):
+
+        # if self.color == 1:
+        #     self.color = 0
+        #     #self.tbRX.setTextColor(clr2)
+        #     self.setFormat(0, len(text), self.sectionFormat)
+        #     mainWin.tbRX.setStyleSheet("background-color: gray;")
+        # else:
+        #     self.color = 1
+        #     #self.tbRX.setTextColor(clr1)
+        #     mainWin.tbRX.setStyleSheet("background-color: white;")
+
+        size = self.bytesToOrd(rxData[1:],1)
+        size = int.from_bytes(size,byteorder='little')
+        
+        rssi = self.bytesToOrd(rxData[2:],1)
+        rssi = int.from_bytes(rssi,byteorder='little', signed= True)
+        mainWin.lblRssi.setText(str(rssi))
+
+        packet = self.bytesToOrd(rxData[3:],size)
+
+        for i in range(size):
+            packet[i] = hex(packet[i])
+
+        mainWin.tbRX.append(','.join(map(str, packet)))
+        mainWin.tbRX.moveCursor(QtGui.QTextCursor.End)
+        #mainWin.leRX.append('\n')
+
+        #mainWin.tbRXpackets.setText(','.join(map(str, packet)))
+
+
     def saveWhoAreYou(self,rxData,  generator,mainWin):
         lenPayload = len(rxData) - USB2Uart.uartRxCrcSize -1 #-1 = command
         sysInfo = self.bytesToOrd(rxData[1:],lenPayload)

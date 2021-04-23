@@ -55,18 +55,13 @@ class USBSerialLink:
             self.isOpen = False
             return False
 
-        self.ser = serial.Serial(str(port))
         try:
-            self.ser
-        except NameError:
+            self.ser = serial.Serial(str(port),57600,timeout=2)
+        except:
             #return "True"
             self.isOpen = False
             return False
-        else:
-            self.ser.close()  # close serial port    
-            self.isOpen = False
-
-        self.ser=serial.Serial(port,57600,timeout=2)
+        
         print(str(self.ser)+ " is Open")
         print("USART Baud: " + "57600")
         self.isOpen = True
@@ -77,11 +72,11 @@ class USBSerialLink:
         return self.PossbileComs
 
     def closePort(self):
-        while self.portIsActive == True: 
+        try:
+            self.ser.close()  # close serial port     
+        except:
             pass
-        
-        self.ser.close()  # close serial port    
-        
+
         self.isOpen = False
 
     def isPortOpen(self):
@@ -99,67 +94,72 @@ class USBSerialLink:
         
         syncWord = []
         count = 0
-
-        while self.isOpen == True:
-            snc = self.ser.read(1)
-            if snc:
-                count+=1
-                syncWord.append((snc))
-                if (count>=uartRxsyncSize):
-                    if ord(syncWord[count-uartRxsyncSize]) == 0xaa and ord(syncWord[count-(uartRxsyncSize-1)]) == 0xbb:
-                        break  
-            else:
-                self.portIsActive = False
-                return "timeout",0                                   
         
-        # budeme cist zacatek headru
-        header = []
-        #rxCmd =self.ser.read(1)
-        for i in range(uartRxHeaderSize):
-            tmp = self.ser.read(1)
-            if tmp:
-                header.append(tmp)
-            else:
-                self.portIsActive = False
-                return "timeout",0
+        try:
+            while self.isOpen == True:
+                snc = self.ser.read(1)
+                if snc:
+                    count+=1
+                    syncWord.append((snc))
+                    if (count>=uartRxsyncSize):
+                        if ord(syncWord[count-uartRxsyncSize]) == 0xaa and ord(syncWord[count-(uartRxsyncSize-1)]) == 0xbb:
+                            break  
+                else:
+                    self.portIsActive = False
+                    return "timeout",0                                   
             
-        #kontrola crc headeru
-        crc=self.crc8(header,uartRxHeaderSize-1)
-        crc=crc.to_bytes(1,'little')
+            # budeme cist zacatek headru
+            header = []
+            #rxCmd =self.ser.read(1)
+            for i in range(uartRxHeaderSize):
+                tmp = self.ser.read(1)
+                if tmp:
+                    header.append(tmp)
+                else:
+                    self.portIsActive = False
+                    return "timeout",0
+                
+            #kontrola crc headeru
+            crc=self.crc8(header,uartRxHeaderSize-1)
+            crc=crc.to_bytes(1,'little')
 
-        if crc != header[uartRxHeaderSize-1]:
-            self.portIsActive = False
-            return "crcHeaderFail",0
+            if crc != header[uartRxHeaderSize-1]:
+                self.portIsActive = False
+                return "crcHeaderFail",0
 
-        #payload
-        y_raw=[]
-        sizeOfPayload = header[0]
-        for i in range(ord(sizeOfPayload)+uartRxCrcSize):
-            znak = self.ser.read(1)
-            if znak:
-                y_raw.append((znak))
+            #payload
+            y_raw=[]
+            sizeOfPayload = header[0]
+            for i in range(ord(sizeOfPayload)+uartRxCrcSize):
+                znak = self.ser.read(1)
+                if znak:
+                    y_raw.append((znak))
+                else:
+                    self.portIsActive = False
+                    return "timeout",0
+            
+            allPacket = bytearray()
+            syncWord = syncWord[count-uartRxsyncSize:]
+            allPacket= syncWord+header+y_raw
+            
+            #kontrola CRC
+            CRC=self.crc8(allPacket,len(allPacket)-1)
+            Rxcrc1=y_raw[len(y_raw)-1]
+            
+            if CRC==ord(Rxcrc1):
+                command = y_raw[0]
+                #if ord(command) > 0 and ord(command) < 180:
+                self.portIsActive = False
+                return "answerOk",y_raw
+                            
             else:
                 self.portIsActive = False
-                return "timeout",0
-         
-        allPacket = bytearray()
-        syncWord = syncWord[count-uartRxsyncSize:]
-        allPacket= syncWord+header+y_raw
+                return "crcFail",0
         
-        #kontrola CRC
-        CRC=self.crc8(allPacket,len(allPacket)-1)
-        Rxcrc1=y_raw[len(y_raw)-1]
-        
-        if CRC==ord(Rxcrc1):
-            command = y_raw[0]
-            #if ord(command) > 0 and ord(command) < 180:
-            self.portIsActive = False
-            return "answerOk",y_raw
-                        
-        else:
-            self.portIsActive = False
-            return "crcFail",0
-    
+        except:
+            return "portLost",0
+
+       
 
     def crc16(self, data : bytearray, offset , length):
         if data is None or offset < 0 or offset > len(data)- 1 and offset+length > len(data):

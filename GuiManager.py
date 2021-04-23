@@ -23,13 +23,13 @@ class  GuiManager():
         return self.comboToInt(self.mainWin.cbTXSF.currentText(),2)
 
     def getRXSF(self):
-        return self.comboToInt(self.mainWin.cbTXSF.currentText(),2)
+        return self.comboToInt(self.mainWin.cbRXSF.currentText(),2)
 
     def getTXBW(self):
         return self.khzTohz(self.mainWin.cbTXBW.currentText())
 
     def getRXBW(self):
-        return self.khzTohz(self.mainWin.cbTXBW.currentText())
+        return self.khzTohz(self.mainWin.cbRXBW.currentText())
 
     def getTXIQ(self):
         return self.comboBoolToInt(self.mainWin.cbTXIQ.currentText())
@@ -41,7 +41,7 @@ class  GuiManager():
         return self.comNoSlash(self.mainWin.cbTXCR.currentText())
 
     def getRXCR(self):
-        return self.comNoSlash(self.mainWin.cbTXCR.currentText())
+        return self.comNoSlash(self.mainWin.cbRXCR.currentText())
 
     def getTXHead(self):
         return self.comboBoolToInt(self.mainWin.cbTXHeader.currentText())
@@ -122,7 +122,7 @@ class  GuiManager():
         return int(str)
 
     def comboBoolToInt(self,str):
-        if str == 'true':
+        if str == 'true' or str == 'Enabled':
             return 1
         else:
             return 0
@@ -162,28 +162,11 @@ class  GuiManager():
 
     def dissableAppWidgets(self):
         self.groupboxDisable(self.mainWin.groupBox)
-        # GuiManager.editTextDisable(self.leTXFreq)
-        # GuiManager.editTextDisable(self.leRXFreq)
-        # GuiManager.comboBoxDisable(self.cbTXSF)
-        # GuiManager.comboBoxDisable(self.cbRXSF)
-        # GuiManager.comboBoxDisable(self.cbTXBW)
-        # GuiManager.comboBoxDisable(self.cbRXBW)
-        # GuiManager.comboBoxDisable(self.cbTXIQ)
-        # GuiManager.comboBoxDisable(self.cbRXIQ)
-        # GuiManager.comboBoxDisable(self.cbTXCR)
-        # GuiManager.comboBoxDisable(self.cbRXCR)
-        # GuiManager.comboBoxDisable(self.cbTXHeader)
-        # GuiManager.comboBoxDisable(self.cbRXHeader)
-        # GuiManager.comboBoxDisable(self.cbTXCrc)
-        # GuiManager.comboBoxDisable(self.cbRXCrc)
-        # GuiManager.editTextDisable(self.leTXPower)
-        # GuiManager.btnDisable(self.buttonWriteRadio)
-        # GuiManager.btnDisable(self.buttonReadRadio)
-        # GuiManager.btnDisable(self.btnStandby)
-        # GuiManager.btnDisable(self.btnTXCW)
+        self.groupboxDisable(self.mainWin.groupBox_4)
 
     def enableAppWidgets(self):
         self.groupboxEnable(self.mainWin.groupBox)
+        self.groupboxEnable(self.mainWin.groupBox_4)
         # GuiManager.editTextEnable(self.leTXFreq)
         # GuiManager.editTextEnable(self.leRXFreq)
         # GuiManager.comboBoxEnable(self.cbTXSF)
