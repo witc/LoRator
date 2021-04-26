@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QApplication, QTableWidgetItem
 #from QtGui  import QPainter, QBrush, QPen
 from LoRatorGui import Ui_MainWindow
 import  RadioParam
-import ptvsd
+#import ptvsd
 import GuiManager
 import binascii
 
@@ -57,7 +57,7 @@ class UartThread(QtCore.QThread):
         self.is_paused = False
 
     def run(self):
-        ptvsd.debug_this_thread()
+       # ptvsd.debug_this_thread()
         while True:
             while self.is_paused == True: 
                 time.sleep(0)
@@ -98,7 +98,7 @@ class ScanPortsThread(QtCore.QThread):
         self.is_paused = False
 
     def run(self):
-        ptvsd.debug_this_thread()
+        #ptvsd.debug_this_thread()
         while True:
             while self.is_paused == True: 
                 time.sleep(0)
