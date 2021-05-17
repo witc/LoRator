@@ -1,0 +1,3 @@
+pyserial
+binasci
+PyQt5

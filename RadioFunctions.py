@@ -1,4 +1,3 @@
-import numpy as np
 import binascii
 import time 
 import USB2Uart
